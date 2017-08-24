@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="location" value="classpath:config/database.properties"/>
+    </bean>
+
+<!--    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"  destroy-method="close" lazy-init="true">
+        <property name="driverClassName" value="${dataSource.driver}" />
+        <property name="url" value="${dataSource.url}"/>
+        <property name="username" value="${dataSource.username}"/>
+        <property name="password" value="${dataSource.password}"/>
+    </bean>-->
+
+    <!-- 按照java:comp/env/jdbc/ds10格式配置 -->
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean" lazy-init="true">
+        <property name="jndiName" value="${dataSource.jndiName}" />
+    </bean>
+
+    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation">
+            <value>classpath:sqlmap/sqlmap-config.xml</value>
+        </property>
+    </bean>
+    <bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate" >
+        <property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+
+    <bean id="abstractIBatisDAO" abstract="true" class="com.mjx.ibatis.AbstractIBatisDAO" >
+        <property name="sqlMapClientTemplate" ref="sqlMapClientTemplate"></property>
+    </bean>
+
+</beans>

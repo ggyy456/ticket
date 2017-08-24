@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="User">
+    <typeAlias alias="user" type="com.mjx.entity.User" />
+
+    <statement id="getAll" resultClass="user">
+        select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
+    </statement>
+
+    <statement id="getList" parameterClass="user" resultClass="user">
+        select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
+        where user_id = #userId:VARCHAR#
+    </statement>
+
+    <statement id="getEntity" parameterClass="java.lang.String" resultClass="user">
+        select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
+        where user_id = #userId:VARCHAR#
+    </statement>
+</sqlMap>
