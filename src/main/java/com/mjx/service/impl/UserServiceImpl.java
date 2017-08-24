@@ -43,6 +43,9 @@ public class UserServiceImpl implements UserService {
         u.setUserName("11111");
         for (int i = 0; i < 50; i++) {
             try {
+                if(i==30){
+                    u.setUserName("超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度");
+                }
                 userDAO.save(u);
             } catch (SQLException e) {
                 e.printStackTrace();
