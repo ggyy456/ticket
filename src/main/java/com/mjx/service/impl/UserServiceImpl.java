@@ -5,11 +5,14 @@ import com.mjx.ibatis.IDAO;
 import com.mjx.service.UserService;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Administrator on 2017/8/20 0020.
  */
+
+@SuppressWarnings("unchecked")
 public class UserServiceImpl implements UserService {
 
     private IDAO<User> userDAO;
@@ -33,5 +36,18 @@ public class UserServiceImpl implements UserService {
         }
 
         return list;
+    }
+
+    public void saveUser() {
+        User u = new User();
+        u.setUserName("11111");
+        for (int i = 0; i < 50; i++) {
+            try {
+                userDAO.save(u);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

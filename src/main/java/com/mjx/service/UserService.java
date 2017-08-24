@@ -13,4 +13,5 @@ import java.util.*;
 public interface UserService {
     public List<User> getUserList(int id);
 
+    public void saveUser();
 }

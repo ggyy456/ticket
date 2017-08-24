@@ -17,4 +17,16 @@
         select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
         where user_id = #userId:VARCHAR#
     </statement>
+
+    <statement id="save" parameterClass="user">
+        <![CDATA[
+			INSERT into t_user (
+				user_name,sex,phone,province,city,source,create_ts
+			)
+			values (
+				#userName:VARCHAR#, #sex:VARCHAR#, #phone:VARCHAR#, #province:VARCHAR#, #city:VARCHAR#, #source:VARCHAR#, #createTs:TIMESTAMP#
+			)
+		]]>
+    </statement>
+
 </sqlMap>

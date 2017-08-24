@@ -52,7 +52,8 @@ public class UserAction extends ActionSupport {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-            list = userService.getUserList(1);
+            //list = userService.getUserList(1);
+            userService.saveUser();
 
             if ("admin".equals(username) && "123456".equals(password)) {
                 return SUCCESS;
