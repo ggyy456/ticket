@@ -1,12 +1,6 @@
 package com.mjx.ibatis;
 
-import com.ibatis.sqlmap.client.SqlMapExecutor;
-import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -16,42 +10,42 @@ public class AbstractIBatisDAO<T> extends SqlMapClientDaoSupport implements IDAO
     protected String nameSpace;
 
     @Override
-    public T getEntity(Object obj) throws SQLException {
+    public T getEntity(Object obj) throws RuntimeException {
         return (T)this.getSqlMapClientTemplate().queryForObject(this.getStatementID("getEntity"), obj);
     }
 
     @Override
-    public List<T> getAll() throws SQLException {
+    public List<T> getAll() throws RuntimeException {
         return this.getSqlMapClientTemplate().queryForList(this.getStatementID("getAll"));
     }
 
     @Override
-    public List<T> getList(Object obj) throws SQLException {
+    public List<T> getList(Object obj) throws RuntimeException {
         return this.getSqlMapClientTemplate().queryForList(this.getStatementID("getList"), obj);
     }
 
     @Override
-    public Object save(T t) throws SQLException {
+    public Object save(T t) throws RuntimeException {
         return this.getSqlMapClientTemplate().insert(this.getStatementID("save"), t);
     }
 
     @Override
-    public int update(T t) throws SQLException {
+    public int update(T t) throws RuntimeException {
         return this.getSqlMapClientTemplate().update(this.getStatementID("update"), t);
     }
 
     @Override
-    public int remove(Object obj) throws SQLException {
+    public int remove(Object obj) throws RuntimeException {
         return this.getSqlMapClientTemplate().delete(this.getStatementID("remove"), obj);
     }
 
     @Override
-    public int removeAll() throws SQLException {
+    public int removeAll() throws RuntimeException {
         return this.getSqlMapClientTemplate().delete(this.getStatementID("removeAll"));
     }
 
     @Override
-    public Object execute(Object... obj) throws SQLException{
+    public Object execute(Object... obj) throws RuntimeException{
         if(obj.length < 1) {
             throw new RuntimeException("必须传入功能标识");
         }

@@ -1,27 +1,26 @@
 package com.mjx.ibatis;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by Administrator on 2017-8-18.
+ * 暂时先抛出RuntimeException，以后改为自己定义的异常体系
  */
 public interface IDAO<T> {
 
-    T getEntity(Object obj) throws SQLException;
+    T getEntity(Object obj) throws RuntimeException;
 
-    List<T> getAll() throws SQLException;
+    List<T> getAll() throws RuntimeException;
 
-    List<T> getList(Object obj) throws SQLException;
+    List<T> getList(Object obj) throws RuntimeException;
 
-    Object save(T t) throws SQLException;
+    Object save(T t) throws RuntimeException;
 
-    int update(T t) throws SQLException;
+    int update(T t) throws RuntimeException;
 
-    int remove(Object obj) throws SQLException;
+    int remove(Object obj) throws RuntimeException;
 
-    int removeAll() throws SQLException;
+    int removeAll() throws RuntimeException;
 
-    Object execute(Object... obj) throws SQLException;
+    Object execute(Object... obj) throws RuntimeException;
 }
