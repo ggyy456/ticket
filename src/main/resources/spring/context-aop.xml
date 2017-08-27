@@ -31,7 +31,7 @@
 
     <aop:config>
         <!-- 设置切入点 -->
-        <aop:pointcut  id="coreServicePointcut"  expression="execution(* com.mjx.service.*.*(..))" />
+        <aop:pointcut  id="coreServicePointcut"  expression="execution(* com.mjx.service..*.*(..))" />
         <!-- 加入事物控制 -->
         <aop:advisor advice-ref="serviceTXAdvice" pointcut-ref="coreServicePointcut" order="1"/>
         <!-- 定义切面 引用通知的bean -->
@@ -53,12 +53,9 @@
     </tx:advice>
     <bean id="atomikosJtaTXManager" class="org.springframework.transaction.jta.JtaTransactionManager"
           lazy-init="true">
-        <property name="transactionManager">
-            <ref bean="atomikosTransactionManager" />
-        </property>
-        <property name="userTransaction">
-            <ref bean="atomikosUserTransaction" />
-        </property>
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="userTransaction" ref ="atomikosUserTransaction" />
+        <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
 
     <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
