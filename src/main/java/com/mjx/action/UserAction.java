@@ -4,6 +4,9 @@ import com.mjx.entity.User;
 import com.mjx.service.UserService;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -32,6 +35,7 @@ import java.util.List;
  */
 
 public class UserAction extends ActionSupport {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserAction.class);
 
     private UserService userService;
 
@@ -45,6 +49,7 @@ public class UserAction extends ActionSupport {
 
     public String login() {
         try {
+            LOGGER.info("进入action");
             HttpServletRequest request = ServletActionContext.getRequest();
             HttpServletResponse response = ServletActionContext.getResponse();
             request.setCharacterEncoding("UTF-8");
@@ -53,7 +58,7 @@ public class UserAction extends ActionSupport {
             String password = request.getParameter("password");
 
             //list = userService.getUserList(1);
-            userService.saveUser();
+            //userService.updateUser();
 
             if ("admin".equals(username) && "123456".equals(password)) {
                 return SUCCESS;

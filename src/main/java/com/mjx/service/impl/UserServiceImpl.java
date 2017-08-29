@@ -5,6 +5,7 @@ import com.mjx.ibatis.IDAO;
 import com.mjx.service.UserService;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +38,25 @@ public class UserServiceImpl implements UserService {
     public void saveUser() {
         User u = new User();
         u.setUserName("11111");
-        for (int i = 0; i < 50; i++) {
-            if(i==30){
-                u.setUserName("超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度");
-            }
+        for (int i = 0; i < 500; i++) {
+//            if(i==30){
+//                u.setUserName("超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度超过长度");
+//            }
             userDAO.save(u);
         }
+    }
+
+    public void updateUser(){
+        Integer min = (Integer)userDAO.execute("getEntityMin");
+        if(min!=null){
+            User u = new User();
+            u.setUserId(min);
+            u.setCreateTs(getCurrentTimestamp());
+            userDAO.update(u);
+        }
+    }
+
+    protected Timestamp getCurrentTimestamp(){
+        return new Timestamp(System.currentTimeMillis());
     }
 }

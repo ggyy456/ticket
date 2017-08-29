@@ -13,9 +13,14 @@
         where user_id = #userId:VARCHAR#
     </statement>
 
-    <statement id="getEntity" parameterClass="java.lang.String" resultClass="user">
+    <statement id="getEntity" parameterClass="string" resultClass="user">
         select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
         where user_id = #userId:VARCHAR#
+    </statement>
+
+    <statement id="getEntityMin" resultClass="int">
+        select min(user_id) as user_id From t_user
+        where create_ts is null
     </statement>
 
     <statement id="save" parameterClass="user">
@@ -26,6 +31,40 @@
 			values (
 				#userName:VARCHAR#, #sex:VARCHAR#, #phone:VARCHAR#, #province:VARCHAR#, #city:VARCHAR#, #source:VARCHAR#, #createTs:TIMESTAMP#
 			)
+		]]>
+    </statement>
+
+    <statement id="update" parameterClass="user">
+        <![CDATA[
+			update t_user
+		]]>
+
+        <dynamic prepend="SET">
+            <isNotEmpty property="userName">
+                <![CDATA[ user_name=#userName:VARCHAR# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="sex">
+                <![CDATA[ sex=#sex:VARCHAR# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="phone">
+                <![CDATA[ phone=#phone:VARCHAR# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="province">
+                <![CDATA[ province=#province:VARCHAR# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="city">
+                <![CDATA[ city=#city:VARCHAR# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="source">
+                <![CDATA[ source=#source:VARCHAR# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="createTs">
+                <![CDATA[ create_ts=#createTs:TIMESTAMP# ]]>
+            </isNotEmpty>
+        </dynamic>
+
+        <![CDATA[
+			WHERE user_id=#userId:VARCHAR#
 		]]>
     </statement>
 

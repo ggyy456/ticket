@@ -35,10 +35,10 @@
         <!-- 加入事物控制 -->
         <aop:advisor advice-ref="serviceTXAdvice" pointcut-ref="coreServicePointcut" order="1"/>
         <!-- 定义切面 引用通知的bean -->
-        <aop:aspect ref="myInterceptor" order="2">
-            <!--指定around通知方法为,doAround()，引用切入点myPointCut -->
+<!--        <aop:aspect ref="myInterceptor" order="2">
+            &lt;!&ndash;指定around通知方法为,doAround()，引用切入点myPointCut &ndash;&gt;
             <aop:around method="doAround" pointcut-ref="coreServicePointcut" />
-        </aop:aspect>
+        </aop:aspect>-->
     </aop:config>
 
 
