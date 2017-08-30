@@ -13,7 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- ab -n 5000 -c 500 -k http://localhost:8081/ticket/login.action
+ ab -n 5000 -c 500 -k http://localhost:8081/ticket/login.do
  ab常用参数的介绍：
  -n ：总共的请求执行数，缺省是1；
  -c： 并发数，缺省是1；
@@ -49,7 +49,7 @@ public class UserAction extends ActionSupport {
 
     public String login() {
         try {
-            LOGGER.info("进入action");
+            LOGGER.info("进入login");
             HttpServletRequest request = ServletActionContext.getRequest();
             HttpServletResponse response = ServletActionContext.getResponse();
             request.setCharacterEncoding("UTF-8");
@@ -57,7 +57,7 @@ public class UserAction extends ActionSupport {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-            //list = userService.getUserList(1);
+            list = userService.getUserList(1);
             //userService.updateUser();
 
             if ("admin".equals(username) && "123456".equals(password)) {
@@ -68,6 +68,16 @@ public class UserAction extends ActionSupport {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        return SUCCESS;
+    }
+
+    public String index() {
+
+        LOGGER.info("进入index");
+
+        //list = userService.getUserList(1);
+        //userService.updateUser();
+
         return SUCCESS;
     }
 

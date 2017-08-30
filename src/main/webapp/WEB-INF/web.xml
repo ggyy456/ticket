@@ -56,7 +56,7 @@ web.xml的加载顺序：【context-param】 -> 【listener】 -> 【filter】 -
     </filter>
     <filter-mapping>
         <filter-name>struts2</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>*.do</url-pattern>
     </filter-mapping>
 
     <welcome-file-list>

@@ -35,10 +35,10 @@
         <!-- 加入事物控制 -->
         <aop:advisor advice-ref="serviceTXAdvice" pointcut-ref="coreServicePointcut" order="1"/>
         <!-- 定义切面 引用通知的bean -->
-<!--        <aop:aspect ref="myInterceptor" order="2">
-            &lt;!&ndash;指定around通知方法为,doAround()，引用切入点myPointCut &ndash;&gt;
+        <aop:aspect ref="myInterceptor" order="2">
+            <!--指定around通知方法为,doAround()，引用切入点myPointCut -->
             <aop:around method="doAround" pointcut-ref="coreServicePointcut" />
-        </aop:aspect>-->
+        </aop:aspect>
     </aop:config>
 
 
@@ -59,7 +59,7 @@
     </bean>
 
     <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
-          init-method="init" destroy-method="close">
+          init-method="init" destroy-method="close" depends-on="setMyAtomikosSystemProps">
         <property name="forceShutdown">
             <value>true</value>
         </property>
@@ -67,6 +67,24 @@
     <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
         <property name="transactionTimeout">
             <value>300</value>
+        </property>
+    </bean>
+
+    <bean id="setMyAtomikosSystemProps" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject">
+            <!-- System.getProperties() -->
+            <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+                <property name="targetClass" value="java.lang.System" />
+                <property name="targetMethod" value="getProperties" />
+            </bean>
+        </property>
+        <property name="targetMethod" value="putAll" />
+        <property name="arguments">
+            <!-- The new Properties -->
+            <props>
+                <prop key="com.atomikos.icatch.file">/config/jta.properties</prop>
+                <prop key="com.atomikos.icatch.hide_init_file_path">true</prop>
+            </props>
         </property>
     </bean>
 

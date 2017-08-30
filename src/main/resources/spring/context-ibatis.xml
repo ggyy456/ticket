@@ -7,12 +7,6 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
-        <property name="location" value="classpath:config/database.properties"/>
-    </bean>
-
 <!--    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"  destroy-method="close" lazy-init="true">
         <property name="driverClassName" value="${dataSource.driver}" />
         <property name="url" value="${dataSource.url}"/>
