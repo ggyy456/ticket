@@ -49,7 +49,11 @@ public class UserServiceImpl implements UserService {
     public void updateUser(){
         Integer min = (Integer)userDAO.execute("getEntityMin");
         if(min!=null){
+            User user = userDAO.getEntity(min);
+            String name = user.getUserName();
+            int t = Integer.parseInt(name)+1;
             User u = new User();
+            u.setUserName(""+t);
             u.setUserId(min);
             u.setCreateTs(getCurrentTimestamp());
             userDAO.update(u);
