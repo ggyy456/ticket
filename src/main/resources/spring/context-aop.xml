@@ -59,7 +59,7 @@
     </bean>
 
     <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
-          init-method="init" destroy-method="close" depends-on="setMyAtomikosSystemProps">
+          init-method="init" destroy-method="close">
         <property name="forceShutdown">
             <value>true</value>
         </property>
@@ -70,9 +70,9 @@
         </property>
     </bean>
 
-    <bean id="setMyAtomikosSystemProps" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <!--<bean id="setMyAtomikosSystemProps" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetObject">
-            <!-- System.getProperties() -->
+            &lt;!&ndash; System.getProperties() &ndash;&gt;
             <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
                 <property name="targetClass" value="java.lang.System" />
                 <property name="targetMethod" value="getProperties" />
@@ -80,13 +80,13 @@
         </property>
         <property name="targetMethod" value="putAll" />
         <property name="arguments">
-            <!-- The new Properties -->
+            &lt;!&ndash; The new Properties &ndash;&gt;
             <props>
-                <prop key="com.atomikos.icatch.file">/config/jta.properties</prop>
+                <prop key="com.atomikos.icatch.file">classpath:config/jta.properties</prop>
                 <prop key="com.atomikos.icatch.hide_init_file_path">true</prop>
             </props>
         </property>
-    </bean>
+    </bean>-->
 
     <!-- 事物管理 -->
 
