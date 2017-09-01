@@ -21,6 +21,7 @@
     <statement id="getEntityMin" resultClass="int">
         select min(user_id) as user_id From t_user
         where create_ts is null
+        <![CDATA[ and user_id<300 ]]>
     </statement>
 
     <statement id="save" parameterClass="user">

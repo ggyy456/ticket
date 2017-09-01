@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void updateUser(){
+    public synchronized void updateUser(){
         Integer min = (Integer)userDAO.execute("getEntityMin");
         if(min!=null){
             User user = userDAO.getEntity(min);
