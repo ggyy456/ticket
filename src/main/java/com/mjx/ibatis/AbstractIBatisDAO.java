@@ -1,6 +1,11 @@
 package com.mjx.ibatis;
 
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.engine.execution.SqlExecutor;
+import com.ibatis.sqlmap.engine.impl.SqlMapClientImpl;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -8,6 +13,27 @@ import java.util.List;
  */
 public class AbstractIBatisDAO<T> extends SqlMapClientDaoSupport implements IDAO<T>{
     protected String nameSpace;
+    private SqlExecutor sqlExecutor;
+
+    protected void init() {
+        if(this.sqlExecutor != null) {
+            SqlMapClient sqlMapClient = this.getSqlMapClientTemplate().getSqlMapClient();
+            if(sqlMapClient instanceof SqlMapClientImpl) {
+                SqlMapClientImpl sqlMapClientImpl = (SqlMapClientImpl)sqlMapClient;
+                try {
+                    Field field = sqlMapClientImpl.delegate.getClass().getDeclaredField("sqlExecutor");
+                    field.setAccessible(true);
+                    field.set(sqlMapClientImpl.delegate, this.sqlExecutor);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            } else {
+                throw new RuntimeException("sqlMapClient必须是SqlMapClientImpl类型");
+            }
+        }
+    }
 
     @Override
     public T getEntity(Object obj) throws RuntimeException {
@@ -85,4 +111,13 @@ public class AbstractIBatisDAO<T> extends SqlMapClientDaoSupport implements IDAO
         statementID = this.getNameSpace() + statementID;
         return statementID;
     }
+
+    public SqlExecutor getSqlExecutor() {
+        return sqlExecutor;
+    }
+
+    public void setSqlExecutor(SqlExecutor sqlExecutor) {
+        this.sqlExecutor = sqlExecutor;
+    }
+
 }
