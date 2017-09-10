@@ -49,7 +49,7 @@ public class UserAction extends ActionSupport {
 
     public String login() {
         try {
-            //LOGGER.info("进入login");
+            LOGGER.info("进入login");
             HttpServletRequest request = ServletActionContext.getRequest();
             HttpServletResponse response = ServletActionContext.getResponse();
             request.setCharacterEncoding("UTF-8");
@@ -57,8 +57,8 @@ public class UserAction extends ActionSupport {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-            //list = userService.getUserList(1);
-            userService.updateUser();
+            list = userService.getUserList(1);
+            //userService.updateUser();
 
             if ("admin".equals(username) && "123456".equals(password)) {
                 return SUCCESS;
@@ -71,9 +71,9 @@ public class UserAction extends ActionSupport {
         return SUCCESS;
     }
 
-    public String index() {
+    public String hello() {
 
-        LOGGER.info("进入index");
+        LOGGER.info("进入hello");
 
         //list = userService.getUserList(1);
         //userService.updateUser();

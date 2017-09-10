@@ -21,6 +21,14 @@
         <property name="userDAO" ref="userDAO" />
     </bean>
 
+    <bean id="queryUserListAction" parent="queryPageAction" scope="prototype">
+        <property name="modelClassName" value="com.mjx.entity.User" />
+        <property name="appService" ref="queryUserListService"/>
+    </bean>
+
+    <bean id="queryUserListService" parent="queryAppService">
+        <property name="idao" ref="userDAO"/>
+    </bean>
 
 
 </beans>

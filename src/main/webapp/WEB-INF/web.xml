@@ -63,4 +63,11 @@ web.xml的加载顺序：【context-param】 -> 【listener】 -> 【filter】 -
         <welcome-file>/WEB-INF/view/index.jsp</welcome-file>
     </welcome-file-list>
 
+    <jsp-config>
+        <taglib>
+            <taglib-uri>isomorphic</taglib-uri>
+            <taglib-location>/WEB-INF/tld/isctaglib.xml</taglib-location>
+        </taglib>
+    </jsp-config>
+
 </web-app>

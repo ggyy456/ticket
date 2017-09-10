@@ -23,4 +23,6 @@ public interface IDAO<T> {
     int removeAll() throws RuntimeException;
 
     Object execute(Object... obj) throws RuntimeException;
+
+    IPaging<T> getPage(IPaging<T> var1) throws RuntimeException;
 }

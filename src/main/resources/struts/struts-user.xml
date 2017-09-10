@@ -4,14 +4,20 @@
 
 <struts>
 
-    <package name="default" namespace="/" extends="struts-default" >
+    <package name="default" namespace="/" extends="json-default" >
         <action name="login" method="login" class="userAction">
             <result name="success">WEB-INF/view/index.jsp</result>
             <result name="login">WEB-INF/view/hello.jsp</result>
         </action>
 
-        <action name="index" method="index" class="userAction">
-            <result name="success">WEB-INF/view/index.jsp</result>
+        <action name="hello" method="hello" class="userAction">
+            <result name="success">WEB-INF/view/hello.jsp</result>
+        </action>
+
+        <action name="queryUserListAction" class="queryUserListAction">
+            <result type="json" >
+                <param name="root">model</param>
+            </result>
         </action>
     </package>
 

@@ -1,41 +1,99 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Administrator
-  Date: 2017/7/29 0029
-  Time: 23:27
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+<%@ taglib uri="/struts-tags" prefix="s"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="isomorphic" prefix="isomorphic" %>
 
 <html>
 <head>
     <title>Hello</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <isomorphic:loadISC skin="Enterprise" isomorphicURI="${pageContext.request.contextPath}/isomorphic/" />
+    <SCRIPT src="${pageContext.request.contextPath}/isomorphic/locales/frameworkMessages_zh_CN.properties"></SCRIPT>
+    <SCRIPT src="${pageContext.request.contextPath}/js/jquery/jquery-1.11.3.min.js"></SCRIPT>
+    <SCRIPT src="${pageContext.request.contextPath}/js/iscext/isc-listgrid-ext.js"></SCRIPT>
+
+    <script language="javascript">
+        function _query(){
+            myListGrid.query(document.getElementById('mainForm'),{startIndex:0,sizePerPage:20});
+        }
+    </script>
+
 </head>
 <body>
 
-<table border=1 width=400>
-    <tr align=center >
-        <td>姓名</td>
-        <td>性别</td>
-        <td>电话</td>
-        <td>省</td>
-        <td>市</td>
-        <td>来源</td>
-        <td>注册时间</td>
-    </tr>
-    <c:forEach items="${list}" var="t" varStatus="s">
-        <tr align=center>
-            <td><c:out value="${t.userName}"/></td>
-            <td><c:out value="${t.sex}"/></td>
-            <td><c:out value="${t.phone}"/></td>
-            <td><c:out value="${t.province}"/></td>
-            <td><c:out value="${t.city}"/></td>
-            <td><c:out value="${t.source}"/></td>
-            <td><c:out value="${t.createTs}"/></td>
-        </tr>
-    </c:forEach>
-</table>
+<div style="width:80%; height:100%;' id="containerDIV">
+<script language="javascript">
+    /*
+     * 配置开始
+     */
+    var myListGrid       = null;//定义listGrid 对象
+    var unDoPaginatorPane  = null;//定义paginatorPane 对象
+
+    unDoPaginatorPane =  _createToolStrip(myListGrid,{showExportAll:true});
+
+    var rollCanvas = isc.HStack.create({
+        align:'right',
+        width:60,
+        height:20,
+        members:[],
+        snapTo:'TR',
+        visibility:'hidden'
+    });
+
+    myListGrid = isc.LasRListGrid.create({
+        enableExport:false,
+        paginatorPane:unDoPaginatorPane,
+        gridComponents : _createGridComponents(unDoPaginatorPane),
+        getRollOverCanvas:function (rowNum, colNum){
+            rollCanvas.clear();
+            rollCanvas.removeMembers (rollCanvas.getMembers());
+            var _record = myListGrid.getRecord(rowNum);
+            var updateClick = "_update("+rowNum+")";
+
+            rollCanvas.addMember(
+                isc.Button.create({
+                    title : "修改",
+                    click : function(){
+                        eval(updateClick);
+                    },
+                    height : 25,width : 50
+                })
+            );
+
+            rollCanvas.show();
+            return rollCanvas;
+        }
+    });
+
+    myListGrid.ready({
+        fields:[
+            seqField,
+            {name:"userId", title:"用户ID",type:"text",width:60 },
+            {name:"userName", title:"用户名",width:80 },
+            {name:"sex", title:"性别",type:"text"  ,width:80},
+            {name:"phone", title:"电话",width:200 },
+            {name:"province", title:"所在省",type:"text",width:200},
+            {name:"city", title:"所在市",type:"text"  ,width:150},
+
+            {name:"source", title:"来源",width:120 },
+            {name:"createTs", title:"登记时间",width:200 },
+
+        ],
+        defaultSort:'',
+        url : "${pageContext.request.contextPath}/ticket/queryUserListAction.do"
+    });
+</script>
+</div>
+<script>
+    try{
+        $(document).ready(function() {
+            iscResizeEvent("resizeISCObjWithContainer(myListGrid,'#containerDIV');");
+            _query();
+        });
+    }catch(e){}
+
+</script>
 
 </body>
 </html>

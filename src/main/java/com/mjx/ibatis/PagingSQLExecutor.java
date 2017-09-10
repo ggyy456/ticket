@@ -38,11 +38,11 @@ public class PagingSQLExecutor extends SqlExecutor {
     }
 
     public void executeQuery(StatementScope statementScope, Connection conn, String sql, Object[] parameters, int skipResults, int maxResults, RowHandlerCallback callback) throws SQLException {
-        if((skipResults != 0 || maxResults != -999999) && this.supportsLimit()) {
+        if((skipResults != NO_SKIPPED_RESULTS || maxResults != NO_MAXIMUM_RESULTS) && this.supportsLimit()) {
             sql = this.dialect.getLimitString(sql, skipResults, maxResults);
             logger.debug(sql, new Object[0]);
-            skipResults = 0;
-            maxResults = -999999;
+            skipResults = NO_SKIPPED_RESULTS;
+            maxResults = NO_MAXIMUM_RESULTS;
         }
 
         super.executeQuery(statementScope, conn, sql, parameters, skipResults, maxResults, callback);

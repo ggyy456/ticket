@@ -4,6 +4,14 @@
 <sqlMap namespace="User">
     <typeAlias alias="user" type="com.mjx.entity.User" />
 
+    <statement id="getPageTotal" parameterClass="com.mjx.ibatis.PagingMapImpl" resultClass="integer">
+        SELECT count(*) FROM t_user
+    </statement>
+
+    <statement id="getPage" parameterClass="com.mjx.ibatis.PagingMapImpl" resultClass="user">
+        select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
+    </statement>
+
     <statement id="getAll" resultClass="user">
         select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
     </statement>

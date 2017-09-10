@@ -29,7 +29,7 @@
         <property name="sqlMapClient" ref="sqlMapClient" />
     </bean>
 
-    <bean id="abstractIBatisDAO" abstract="true" class="com.mjx.ibatis.AbstractIBatisDAO" >
+    <bean id="abstractIBatisDAO" init-method="init" abstract="true" class="com.mjx.ibatis.AbstractIBatisDAO" >
         <property name="sqlMapClientTemplate" ref="sqlMapClientTemplate"></property>
         <property name="sqlExecutor" ref="sqlExecutor" />
     </bean>
@@ -42,5 +42,9 @@
     <bean id="oracleDialect" class="com.mjx.ibatis.dialect.OracleDialect" lazy-init="true"/>
     <bean id="db2Dialect" class="com.mjx.ibatis.dialect.DB2Dialect" lazy-init="true"/>
     <bean id="mySqlDialect" class="com.mjx.ibatis.dialect.MySQLDialect" lazy-init="true"/>
+
+    <bean id="queryPageAction" class="com.mjx.ibatis.AbstractPagingAction" scope="prototype" >
+    </bean>
+    <bean id="queryAppService" class="com.mjx.ibatis.PagingAppServiceImpl" />
 
 </beans>
