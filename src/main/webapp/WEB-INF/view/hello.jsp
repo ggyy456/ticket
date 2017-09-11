@@ -12,6 +12,13 @@
     <SCRIPT src="${pageContext.request.contextPath}/isomorphic/locales/frameworkMessages_zh_CN.properties"></SCRIPT>
     <SCRIPT src="${pageContext.request.contextPath}/js/jquery/jquery-1.11.3.min.js"></SCRIPT>
     <SCRIPT src="${pageContext.request.contextPath}/js/iscext/isc-listgrid-ext.js"></SCRIPT>
+    <style>
+        .positionDiv {
+            position: absolute;
+            width: 950px;
+            height: 650px;
+        }
+    </style>
 
     <script language="javascript">
         function _query(){
@@ -22,7 +29,7 @@
 </head>
 <body>
 
-<div style="width:80%; height:100%;' id="containerDIV">
+<div class="positionDiv" id="containerDIV">
 <script language="javascript">
     /*
      * 配置开始
@@ -70,14 +77,14 @@
         fields:[
             seqField,
             {name:"userId", title:"用户ID",type:"text",width:60 },
-            {name:"userName", title:"用户名",width:80 },
-            {name:"sex", title:"性别",type:"text"  ,width:80},
-            {name:"phone", title:"电话",width:200 },
-            {name:"province", title:"所在省",type:"text",width:200},
-            {name:"city", title:"所在市",type:"text"  ,width:150},
+            {name:"userName", title:"用户名",width:100 },
+            {name:"sex", title:"性别",type:"text"  ,width:60},
+            {name:"phone", title:"电话",width:100 },
+            {name:"province", title:"所在省",type:"text",width:100},
+            {name:"city", title:"所在市",type:"text"  ,width:100},
 
-            {name:"source", title:"来源",width:120 },
-            {name:"createTs", title:"登记时间",width:200 },
+            {name:"source", title:"来源",width:100 },
+            {name:"createTs", title:"登记时间",width:150 },
 
         ],
         defaultSort:'',

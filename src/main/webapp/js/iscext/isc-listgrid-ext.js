@@ -771,9 +771,8 @@ var containerFull = function(ele, type) {
 		
 	
 		
-		//var ddbch = $(ele).position().top;
-		
-		docbodych=	(docbodych - 100 - 3);
+		var ddbch = $(ele).position().top;
+		docbodych=	(docbodych - ddbch - 3);
 
 		$(ele).css("height", docbodych + 'px');
  
