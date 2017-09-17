@@ -1,0 +1,45 @@
+CREATE TABLE LAS.T_USER  (
+	USER_ID  	INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1, NO CACHE) NOT NULL,
+	USER_NAME	VARCHAR(50),
+	SEX      	VARCHAR(4),
+	PHONE    	VARCHAR(30),
+	PROVINCE 	VARCHAR(50),
+	CITY     	VARCHAR(80),
+	SOURCE   	VARCHAR(50),
+	CREATE_TS	TIMESTAMP,
+
+	CONSTRAINT PK_T_USER PRIMARY KEY(USER_ID)
+);
+
+
+CREATE TABLE LAS.t_train  (
+	train_id  	INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1, NO CACHE) NOT NULL,
+	train_no    VARCHAR(10),
+	train_type  VARCHAR(10),
+	begin_station VARCHAR(30),
+	end_station VARCHAR(30),
+	begin_time VARCHAR(5),
+	end_time VARCHAR(5),
+	take_time VARCHAR(5),
+
+	CONSTRAINT pk_t_train PRIMARY KEY(train_id)
+);
+
+
+CREATE TABLE LAS.t_ticket  (
+	ticket_id     INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1, NO CACHE) NOT NULL,
+	train_id  	INTEGER NOT NULL,
+	ticket_no	VARCHAR(10),
+	ticket_time	VARCHAR(10),
+	ticket_type	VARCHAR(10),
+	is_sell		VARCHAR(2),
+
+	CONSTRAINT pk_t_ticket PRIMARY KEY(ticket_id)
+);
+
+CREATE TABLE LAS.t_user_ticket  (
+	user_id  	INTEGER NOT NULL,
+	ticket_id	INTEGER NOT NULL,
+
+	CONSTRAINT pk_t_user_ticket PRIMARY KEY(user_id,ticket_id)
+);

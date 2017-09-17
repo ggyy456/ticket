@@ -1,0 +1,46 @@
+CREATE TABLE T_USER  (
+  USER_ID  	int(11) NOT NULL AUTO_INCREMENT,
+  USER_NAME	VARCHAR(50),
+  SEX      	VARCHAR(4),
+  PHONE    	VARCHAR(30),
+  PROVINCE 	VARCHAR(50),
+  CITY     	VARCHAR(80),
+  SOURCE   	VARCHAR(50),
+  CREATE_TS	TIMESTAMP,
+
+  PRIMARY KEY(USER_ID)
+);
+
+CREATE TABLE t_train  (
+  train_id  	int(11) NOT NULL AUTO_INCREMENT,
+  train_no    VARCHAR(10),
+  train_type  VARCHAR(10),
+  begin_station VARCHAR(30),
+  end_station VARCHAR(30),
+  begin_time VARCHAR(5),
+  end_time VARCHAR(5),
+  take_time VARCHAR(5),
+
+  PRIMARY KEY(train_id)
+);
+
+
+
+CREATE TABLE t_ticket  (
+  ticket_id   int(11) NOT NULL AUTO_INCREMENT,
+  train_id  	int NOT NULL,
+  ticket_no	VARCHAR(10),
+  ticket_time	VARCHAR(10),
+  ticket_type	VARCHAR(10),
+  is_sell		VARCHAR(2),
+
+  PRIMARY KEY(ticket_id)
+);
+
+
+CREATE TABLE t_user_ticket  (
+  user_id  	int NOT NULL,
+  ticket_id	int NOT NULL,
+
+  PRIMARY KEY(user_id,ticket_id)
+);
