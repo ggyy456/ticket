@@ -9,7 +9,7 @@ public class Ticket {
     private String ticketNo;
     private String ticketTime;
     private String ticketType;
-    private String isSell;
+    private String isSell;      //0-未售 1-已售
 
     public Integer getTicketId() {
         return ticketId;

@@ -27,9 +27,9 @@ CREATE TABLE t_train  (
 
 
 CREATE TABLE t_ticket  (
-  ticket_id   int(11) NOT NULL AUTO_INCREMENT,
+  ticket_id     int(11) NOT NULL AUTO_INCREMENT,
   train_id  	int NOT NULL,
-  ticket_no	VARCHAR(10),
+  ticket_no	    VARCHAR(16),
   ticket_time	VARCHAR(10),
   ticket_type	VARCHAR(10),
   is_sell		VARCHAR(2),

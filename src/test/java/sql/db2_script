@@ -29,7 +29,7 @@ CREATE TABLE LAS.t_train  (
 CREATE TABLE LAS.t_ticket  (
 	ticket_id     INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1, NO CACHE) NOT NULL,
 	train_id  	INTEGER NOT NULL,
-	ticket_no	VARCHAR(10),
+	ticket_no	VARCHAR(16),
 	ticket_time	VARCHAR(10),
 	ticket_type	VARCHAR(10),
 	is_sell		VARCHAR(2),
