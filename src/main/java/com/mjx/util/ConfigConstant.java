@@ -5,9 +5,14 @@ package com.mjx.util;
  * 提供相关常量配置项
  */
 public interface ConfigConstant {
-    String CONFIG_FILE= "config/database.properties";
+    String CONFIG_FILE= "config/dialect.properties";
 
-    String APP_BASE_PACKAGE="frame.app.base_package";
-    String APP_JSP_PATH="frame.app.jsp_path";
-    String APP_ASSET_PATH="frame.app.asset_path";
+    String JDBC_DRIVER="test.driverName";
+    String JDBC_URL="test.url";
+    String JDBC_USERNAME="test.username";
+    String JDBC_PASSWORD="test.password";
+
+    String APP_BASE_PACKAGE="ticket.app.base_package";
+    String APP_JSP_PATH="ticket.app.jsp_path";
+    String APP_ASSET_PATH="ticket.app.asset_path";
 }

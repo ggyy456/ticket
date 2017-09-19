@@ -8,4 +8,5 @@
               useStatementNamespaces="true" />
 
     <sqlMap resource="sqlmap/sqlmap-user.xml"/>
+    <sqlMap resource="sqlmap/sqlmap-train.xml"/>
 </sqlMapConfig>

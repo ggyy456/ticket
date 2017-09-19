@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <package name="train" namespace="/train" extends="json-default" >
+
+        <action name="toTrainListPage" method="toTrainListPage" class="trainAction">
+            <result name="success">/WEB-INF/view/trainList.jsp</result>
+        </action>
+
+        <action name="queryTrainListAction" class="queryTrainListAction">
+            <result type="json" >
+                <param name="root">model</param>
+            </result>
+        </action>
+    </package>
+
+</struts>

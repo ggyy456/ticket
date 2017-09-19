@@ -1,6 +1,7 @@
 package com.mjx.test;
 
 import com.mjx.entity.ConstantTicket;
+import com.mjx.util.ConfigHelper;
 import jxl.Sheet;
 import jxl.Workbook;
 import java.io.File;
@@ -22,10 +23,10 @@ public class TestImport {
 
         try{
             System.out.println("正在连接数据库..........");
-            Class.forName("com.ibm.db2.jcc.DB2Driver");
-            String url = "jdbc:db2://192.168.50.66:50001/lasntfdb:currentSchema=LAS;";
-            String user = "las";//数据库用户名
-            String pwd = "las";//数据库密码
+            Class.forName(ConfigHelper.getJdbcDriver());
+            String url = ConfigHelper.getJdbcUrl();
+            String user = ConfigHelper.getJdbcUsername();
+            String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 

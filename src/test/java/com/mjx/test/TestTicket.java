@@ -2,6 +2,7 @@ package com.mjx.test;
 
 import com.mjx.entity.ConstantTicket;
 import com.mjx.entity.Train;
+import com.mjx.util.ConfigHelper;
 import com.mjx.util.UUIDGenerator;
 
 import java.sql.*;
@@ -22,15 +23,15 @@ public class TestTicket {
 
         try{
             System.out.println("正在连接数据库..........");
-            Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/ticket";
-            String user = "root";//数据库用户名
-            String pwd = "root";//数据库密码
+            Class.forName(ConfigHelper.getJdbcDriver());
+            String url = ConfigHelper.getJdbcUrl();
+            String user = ConfigHelper.getJdbcUsername();
+            String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 
-            String sql="select TRAIN_ID,TRAIN_TYPE From T_TRAIN "
-                    +"where BEGIN_STATION='北京' and END_STATION in('上海','天津','重庆')";
+            String sql="select TRAIN_ID,TRAIN_TYPE From T_TRAIN where BEGIN_STATION='北京' "
+                    +"and END_STATION in('长沙','长春','成都','福州','广州','贵阳','呼和浩特','哈尔滨')";
 
             stmt = (Statement) conn.createStatement();
             stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
@@ -64,10 +65,10 @@ public class TestTicket {
 
         try{
             System.out.println("正在连接数据库..........");
-            Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/ticket";
-            String user = "root";//数据库用户名
-            String pwd = "root";//数据库密码
+            Class.forName(ConfigHelper.getJdbcDriver());
+            String url = ConfigHelper.getJdbcUrl();
+            String user = ConfigHelper.getJdbcUsername();
+            String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 

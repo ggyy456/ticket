@@ -7,5 +7,6 @@
     <constant name="struts.action.extension" value="do"/>
 
     <include file="struts/struts-user.xml" />
+    <include file="struts/struts-train.xml" />
 
 </struts>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="Train">
+    <typeAlias alias="train" type="com.mjx.entity.TrainDTO" />
+
+    <sql id="wheresql" >
+        <dynamic prepend="where">
+            <!-- 始发站 -->
+            <isNotNull prepend="and" property="beginStation">
+                a.BEGIN_STATION = #beginStation#
+            </isNotNull>
+
+            <!-- 目的地 -->
+            <isNotNull prepend="and" property="endStation">
+                a.END_STATION = #endStation#
+            </isNotNull>
+        </dynamic>
+    </sql >
+
+    <statement id="getPageTotal" parameterClass="com.mjx.ibatis.PagingMapImpl" resultClass="integer">
+        select count(distinct a.TRAIN_ID)
+        From T_TRAIN a
+        join T_TICKET b on a.TRAIN_ID=b.TRAIN_ID
+        <include refid="wheresql" />
+    </statement>
+
+    <statement id="getPage" parameterClass="com.mjx.ibatis.PagingMapImpl" resultClass="train">
+        select a.TRAIN_ID as trainId,a.TRAIN_NO as trainNo,a.BEGIN_STATION as beginStation
+            ,a.END_STATION as endStation,a.BEGIN_TIME as beginTime,a.END_TIME as endTime,a.TAKE_TIME as takeTime
+            ,count(case when b.TICKET_TYPE='一等座' then b.TICKET_ID end) as firstSeat
+            ,count(case when b.TICKET_TYPE='二等座' then b.TICKET_ID end) as secondSeat
+            ,count(case when b.TICKET_TYPE='商务座' then b.TICKET_ID end) as businessSeat
+            ,count(case when b.TICKET_TYPE='硬座' then b.TICKET_ID end) as hardSeat
+            ,count(case when b.TICKET_TYPE='软座' then b.TICKET_ID end) as softSeat
+            ,count(case when b.TICKET_TYPE='硬卧' then b.TICKET_ID end) as hardSleep
+            ,count(case when b.TICKET_TYPE='软卧' then b.TICKET_ID end) as softSleep
+            ,count(case when b.TICKET_TYPE='无座' then b.TICKET_ID end) as noSeat
+        From T_TRAIN a
+        join T_TICKET b on a.TRAIN_ID=b.TRAIN_ID
+        <include refid="wheresql" />
+        group by a.TRAIN_ID,a.TRAIN_NO,a.BEGIN_STATION,a.END_STATION,a.BEGIN_TIME,a.END_TIME,a.TAKE_TIME
+    </statement>
+
+</sqlMap>
