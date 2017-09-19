@@ -15,6 +15,7 @@
     <SCRIPT type="text/javascript" src="${pageContext.request.contextPath}/js/cityselect.js"></SCRIPT>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cityselect.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/globle.css">
     <style>
         .positionDiv {
             position: absolute;
@@ -33,11 +34,38 @@
 <body>
 
 <form id="mainForm" name="mainForm" method="post">
-<p align="center">
-    始发站：<input type="text" class="cityinput" id="beginStation" name="beginStation" placeholder="请输入始发站" size="15" />
-    目的地：<input type="text" class="cityinput" id="endStation" name="endStation" placeholder="请输入目的地" size="15" />
-    <input type="button" value="查 询" onclick="_query();"/>
-</p>
+
+    <table class="commonTable"  id="commonTable"  cellpadding="0" cellspacing="0" width="1178">
+    <tr>
+        <td>
+        出发地：<input type="text" class="cityinput" id="beginStation" name="beginStation" placeholder="请输入出发地" size="15" />
+        </td>
+        <td>
+        目的地：<input type="text" class="cityinput" id="endStation" name="endStation" placeholder="请输入目的地" size="15" />
+        </td>
+        <td>
+        车次类型：<input name="trainType" type="checkbox" value="G" />高铁
+                  <input name="trainType" type="checkbox" value="C" />城际
+                  <input name="trainType" type="checkbox" value="D" />动车
+                  <input name="trainType" type="checkbox" value="Z" />直达
+                  <input name="trainType" type="checkbox" value="T" />特快
+                  <input name="trainType" type="checkbox" value="K" />快速
+        </td>
+        <td>
+        发车时间：<select id="beginTime" name="beginTime">
+                    <option value="">00:00-24:00</option>
+                    <option value="">00:00-06:00</option>
+                    <option value="">06:00-12:00</option>
+                    <option value="">12:00-18:00</option>
+                    <option value="">18:00-24:00</option>
+                  </select>
+        </td>
+        <td>
+        <input type="button" class="btn" value="查 询" onclick="_query();"/>
+        </td>
+    </tr>
+    </table>
+
 </form>
 
 <div class="positionDiv" id="containerDIV">
