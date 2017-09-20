@@ -10,7 +10,7 @@
 .cityslide li.empty em{color:red;font-style:normal;}
 .cityname{float:left;}
 .cityspell{float:right;}
-.cityBox{width:380px;border:1px solid #B3CDC0;overflow:hidden;box-shadow:2px 2px 3px rgba(0,0,0,0.3);}
+.cityBox{width:410px;border:1px solid #B3CDC0;overflow:hidden;box-shadow:2px 2px 3px rgba(0,0,0,0.3);}
 .cityBox ul{margin:0;padding:0;overflow:hidden;}
 .cityBox ul li:first-child{margin-left:5px;}
 .cityBox ul li{float:left;list-style:none;padding:5px;border-bottom:1px solid #DDD;cursor:pointer;display:inline;color:#00a346;}
