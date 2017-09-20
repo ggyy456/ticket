@@ -22,6 +22,25 @@ public class TrainDTO {
     private String softSleep;
     private String noSeat;
 
+    //查询条件
+    private String queryTime1;
+    private String queryTime2;
+
+    public String getQueryTime1() {
+        return queryTime1;
+    }
+
+    public void setQueryTime1(String queryTime1) {
+        this.queryTime1 = queryTime1;
+    }
+
+    public String getQueryTime2() {
+        return queryTime2;
+    }
+
+    public void setQueryTime2(String queryTime2) {
+        this.queryTime2 = queryTime2;
+    }
 
     public Integer getTrainId() {
         return trainId;

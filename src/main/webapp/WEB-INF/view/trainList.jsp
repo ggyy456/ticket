@@ -28,6 +28,31 @@
         function _query(){
             myListGrid.query(document.getElementById('mainForm'),{startIndex:0,sizePerPage:30});
         }
+
+        function setValue(){
+            var str="";
+            $("input[name='trainTypeCheck']:checked").each(function(){
+                str += ",'"+$(this).val()+"'";
+            })
+            if(str!=""){
+                str = str.substring(1);
+                $("#trainType").val(str);
+            }
+            else{
+                $("#trainType").val("");
+            }
+
+            var beginTime = $("#beginTime").val();
+            if(beginTime!=""){
+                var arr = beginTime.split("-");
+                $("#queryTime1").val(arr[0]);
+                $("#queryTime2").val(arr[1]);
+            }
+            else{
+                $("#queryTime1").val("");
+                $("#queryTime2").val("");
+            }
+        }
     </script>
 
 </head>
@@ -44,21 +69,24 @@
         目的地：<input type="text" class="cityinput" id="endStation" name="endStation" placeholder="请输入目的地" size="15" />
         </td>
         <td>
-        车次类型：<input name="trainType" type="checkbox" value="G" />高铁
-                  <input name="trainType" type="checkbox" value="C" />城际
-                  <input name="trainType" type="checkbox" value="D" />动车
-                  <input name="trainType" type="checkbox" value="Z" />直达
-                  <input name="trainType" type="checkbox" value="T" />特快
-                  <input name="trainType" type="checkbox" value="K" />快速
+        车次类型：<input name="trainTypeCheck" type="checkbox" value="G" onclick="setValue()" />高铁
+                  <input name="trainTypeCheck" type="checkbox" value="C" onclick="setValue()" />城际
+                  <input name="trainTypeCheck" type="checkbox" value="D" onclick="setValue()" />动车
+                  <input name="trainTypeCheck" type="checkbox" value="Z" onclick="setValue()" />直达
+                  <input name="trainTypeCheck" type="checkbox" value="T" onclick="setValue()" />特快
+                  <input name="trainTypeCheck" type="checkbox" value="K" onclick="setValue()" />快速
+            <input type="hidden" id="trainType" name="trainType" />
         </td>
         <td>
-        发车时间：<select id="beginTime" name="beginTime">
+        发车时间：<select id="beginTime" name="beginTime" onchange="setValue()">
                     <option value="">00:00-24:00</option>
-                    <option value="">00:00-06:00</option>
-                    <option value="">06:00-12:00</option>
-                    <option value="">12:00-18:00</option>
-                    <option value="">18:00-24:00</option>
+                    <option value="00:00-06:00">00:00-06:00</option>
+                    <option value="06:00-12:00">06:00-12:00</option>
+                    <option value="12:00-18:00">12:00-18:00</option>
+                    <option value="18:00-24:00">18:00-24:00</option>
                   </select>
+            <input type="hidden" id="queryTime1" name="queryTime1" />
+            <input type="hidden" id="queryTime2" name="queryTime2" />
         </td>
         <td>
         <input type="button" class="btn" value="查 询" onclick="_query();"/>

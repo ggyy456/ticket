@@ -15,6 +15,20 @@
             <isNotNull prepend="and" property="endStation">
                 a.END_STATION = #endStation#
             </isNotNull>
+
+            <!-- 车次类型 -->
+            <isNotNull prepend="and" property="trainType">
+                a.train_type in ($trainType$)
+            </isNotNull>
+
+            <isNotNull prepend="and" property="queryTime1">
+                a.BEGIN_TIME &gt;= #queryTime1#
+            </isNotNull>
+
+            <isNotNull prepend="and" property="queryTime2">
+                a.BEGIN_TIME &lt;= #queryTime2#
+            </isNotNull>
+
         </dynamic>
     </sql >
 
