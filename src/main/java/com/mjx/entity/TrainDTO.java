@@ -22,9 +22,46 @@ public class TrainDTO {
     private String softSleep;
     private String noSeat;
 
+    private Integer ticketId;
+    private Integer userId;
+    private String ticketType;
+    private String isSell;
+
     //查询条件
     private String queryTime1;
     private String queryTime2;
+
+    public String getIsSell() {
+        return isSell;
+    }
+
+    public void setIsSell(String isSell) {
+        this.isSell = isSell;
+    }
+
+    public Integer getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Integer ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getTicketType() {
+        return ticketType;
+    }
+
+    public void setTicketType(String ticketType) {
+        this.ticketType = ticketType;
+    }
 
     public String getQueryTime1() {
         return queryTime1;

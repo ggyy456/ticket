@@ -43,7 +43,7 @@ public class TestImport {
             // 获得行数
             int rows = sheet.getRows();
             // 读取数据
-            for (int row = 49560; row < rows; row++)
+            for (int row = 0; row < rows; row++)
             {
                 String username = sheet.getCell(0, row).getContents();
                 String source = sheet.getCell(1, row).getContents();

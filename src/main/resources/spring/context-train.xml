@@ -14,6 +14,11 @@
     </bean>
 
     <bean id="trainAction" class="com.mjx.action.TrainAction" scope="prototype">
+        <property name="trainService" ref="trainService" />
+    </bean>
+
+    <bean id="trainService" class="com.mjx.service.impl.TrainServiceImpl">
+        <property name="trainDAO" ref="trainDAO" />
     </bean>
 
     <bean id="queryTrainListAction" parent="queryPageAction" scope="prototype">

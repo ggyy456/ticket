@@ -21,6 +21,15 @@
                 a.train_type in ($trainType$)
             </isNotNull>
 
+            <!-- 车票类型 -->
+            <isNotNull prepend="and" property="ticketType">
+                b.TICKET_TYPE = #ticketType#
+            </isNotNull>
+
+            <isNotNull prepend="and" property="isSell">
+                IS_SELL = #isSell#
+            </isNotNull>
+
             <isNotNull prepend="and" property="queryTime1">
                 a.BEGIN_TIME &gt;= #queryTime1#
             </isNotNull>
@@ -42,18 +51,54 @@
     <statement id="getPage" parameterClass="com.mjx.ibatis.PagingMapImpl" resultClass="train">
         select a.TRAIN_ID as trainId,a.TRAIN_NO as trainNo,a.BEGIN_STATION as beginStation
             ,a.END_STATION as endStation,a.BEGIN_TIME as beginTime,a.END_TIME as endTime,a.TAKE_TIME as takeTime
-            ,count(case when b.TICKET_TYPE='一等座' then b.TICKET_ID end) as firstSeat
-            ,count(case when b.TICKET_TYPE='二等座' then b.TICKET_ID end) as secondSeat
-            ,count(case when b.TICKET_TYPE='商务座' then b.TICKET_ID end) as businessSeat
-            ,count(case when b.TICKET_TYPE='硬座' then b.TICKET_ID end) as hardSeat
-            ,count(case when b.TICKET_TYPE='软座' then b.TICKET_ID end) as softSeat
-            ,count(case when b.TICKET_TYPE='硬卧' then b.TICKET_ID end) as hardSleep
-            ,count(case when b.TICKET_TYPE='软卧' then b.TICKET_ID end) as softSleep
-            ,count(case when b.TICKET_TYPE='无座' then b.TICKET_ID end) as noSeat
+            ,count(case when b.TICKET_TYPE='一等座' and b.IS_SELL='0' then b.TICKET_ID end) as firstSeat
+            ,count(case when b.TICKET_TYPE='二等座' and b.IS_SELL='0' then b.TICKET_ID end) as secondSeat
+            ,count(case when b.TICKET_TYPE='商务座' and b.IS_SELL='0' then b.TICKET_ID end) as businessSeat
+            ,count(case when b.TICKET_TYPE='硬座' and b.IS_SELL='0' then b.TICKET_ID end) as hardSeat
+            ,count(case when b.TICKET_TYPE='软座' and b.IS_SELL='0' then b.TICKET_ID end) as softSeat
+            ,count(case when b.TICKET_TYPE='硬卧' and b.IS_SELL='0' then b.TICKET_ID end) as hardSleep
+            ,count(case when b.TICKET_TYPE='软卧' and b.IS_SELL='0' then b.TICKET_ID end) as softSleep
+            ,count(case when b.TICKET_TYPE='无座' and b.IS_SELL='0' then b.TICKET_ID end) as noSeat
         From T_TRAIN a
         join T_TICKET b on a.TRAIN_ID=b.TRAIN_ID
         <include refid="wheresql" />
         group by a.TRAIN_ID,a.TRAIN_NO,a.BEGIN_STATION,a.END_STATION,a.BEGIN_TIME,a.END_TIME,a.TAKE_TIME
     </statement>
+
+
+    <statement id="getEntityTicket" parameterClass="train" resultClass="train">
+        select b.TICKET_ID as ticketId,a.TRAIN_ID as trainId
+        from T_TRAIN a
+        join t_ticket b on a.TRAIN_ID=b.TRAIN_ID
+        <include refid="wheresql" />
+        fetch first 1 rows only
+    </statement>
+
+    <statement id="getEntityUser" parameterClass="train" resultClass="train">
+        select a.TICKET_ID as ticketId,USER_ID as userId
+        From T_USER_TICKET a
+        join T_TICKET b on a.TICKET_ID=b.TICKET_ID
+        where USER_ID=#userId:INTEGER# and TRAIN_ID=#trainId:INTEGER#
+    </statement>
+
+    <statement id="saveUserTicket" parameterClass="train">
+        <![CDATA[
+			INSERT into T_USER_TICKET (
+				USER_ID,TICKET_ID
+			)
+			values (
+				#userId:INTEGER#, #ticketId:INTEGER#
+			)
+		]]>
+    </statement>
+
+    <statement id="updateTicket" parameterClass="train">
+        <![CDATA[
+			update T_TICKET set IS_SELL='1'
+			where TICKET_ID=#ticketId:INTEGER#
+		]]>
+    </statement>
+
+
 
 </sqlMap>
