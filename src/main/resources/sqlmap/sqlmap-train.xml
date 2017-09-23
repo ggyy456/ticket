@@ -37,7 +37,6 @@
             <isNotNull prepend="and" property="queryTime2">
                 a.BEGIN_TIME &lt;= #queryTime2#
             </isNotNull>
-
         </dynamic>
     </sql >
 
@@ -71,14 +70,17 @@
         from T_TRAIN a
         join t_ticket b on a.TRAIN_ID=b.TRAIN_ID
         <include refid="wheresql" />
-        fetch first 1 rows only
+        order by b.ticket_no
+        <isNotEmpty property="dynamicSql">
+            $dynamicSql$
+        </isNotEmpty>
     </statement>
 
-    <statement id="getEntityUser" parameterClass="train" resultClass="train">
-        select a.TICKET_ID as ticketId,USER_ID as userId
+    <statement id="getEntityUser" parameterClass="train" resultClass="integer">
+        select count(*)
         From T_USER_TICKET a
         join T_TICKET b on a.TICKET_ID=b.TICKET_ID
-        where USER_ID=#userId:INTEGER# and TRAIN_ID=#trainId:INTEGER#
+        where (a.USER_ID=#userId:INTEGER# and b.TRAIN_ID=#trainId:INTEGER#) or a.TICKET_ID=#ticketId:INTEGER#
     </statement>
 
     <statement id="saveUserTicket" parameterClass="train">

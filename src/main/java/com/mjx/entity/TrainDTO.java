@@ -26,10 +26,19 @@ public class TrainDTO {
     private Integer userId;
     private String ticketType;
     private String isSell;
+    private String dynamicSql;
 
     //查询条件
     private String queryTime1;
     private String queryTime2;
+
+    public String getDynamicSql() {
+        return dynamicSql;
+    }
+
+    public void setDynamicSql(String dynamicSql) {
+        this.dynamicSql = dynamicSql;
+    }
 
     public String getIsSell() {
         return isSell;

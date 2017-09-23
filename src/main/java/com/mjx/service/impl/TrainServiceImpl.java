@@ -6,6 +6,7 @@ import com.mjx.entity.User;
 import com.mjx.ibatis.IDAO;
 import com.mjx.service.TrainService;
 import com.mjx.service.UserService;
+import com.mjx.util.ConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +44,22 @@ public class TrainServiceImpl implements TrainService {
         cond.setTrainType("'Z'");
         cond.setTicketType("硬卧");
         cond.setIsSell("0");
+        String driver = ConfigHelper.getJdbcDriver();
+        if(driver.equals("com.mysql.jdbc.Driver")){
+            cond.setDynamicSql(" limit 1");
+        }
+        else{
+            cond.setDynamicSql(" fetch first 1 rows only");
+        }
 
         TrainDTO ticket = (TrainDTO)trainDAO.execute("getEntityTicket",cond);
         if(ticket!=null){
+            cond = new TrainDTO();
             cond.setUserId(userId);
             cond.setTrainId(ticket.getTrainId());
-            TrainDTO dto = (TrainDTO)trainDAO.execute("getEntityUser",cond);
-            if(dto==null){
+            cond.setTicketId(ticket.getTicketId());
+            Integer count = (Integer)trainDAO.execute("getEntityUser",cond);
+            if(count==0){
                 ticket.setUserId(userId);
                 trainDAO.execute("saveUserTicket",ticket);
                 trainDAO.execute("updateTicket",ticket);
