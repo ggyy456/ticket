@@ -37,6 +37,10 @@
             <isNotNull prepend="and" property="queryTime2">
                 a.BEGIN_TIME &lt;= #queryTime2#
             </isNotNull>
+
+            <isNotEmpty property="dynamicSql">
+                $dynamicSql$
+            </isNotEmpty>
         </dynamic>
     </sql >
 
@@ -70,10 +74,6 @@
         from T_TRAIN a
         join t_ticket b on a.TRAIN_ID=b.TRAIN_ID
         <include refid="wheresql" />
-        order by b.ticket_no
-        <isNotEmpty property="dynamicSql">
-            $dynamicSql$
-        </isNotEmpty>
     </statement>
 
     <statement id="getEntityUser" parameterClass="train" resultClass="integer">
