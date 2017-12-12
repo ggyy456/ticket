@@ -49,16 +49,22 @@
             <groupId>db2jcc</groupId>
             <artifactId>db2jcc</artifactId>
             <version>9.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc-9.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>db2jcc_license_cu</groupId>
             <artifactId>db2jcc_license_cu</artifactId>
             <version>9.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc_license_cu-9.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>db2jcc_javax</groupId>
             <artifactId>db2jcc_javax</artifactId>
             <version>9.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/db2jcc_javax-9.0.jar</systemPath>
         </dependency>
         <!-- mysql -->
         <dependency>
