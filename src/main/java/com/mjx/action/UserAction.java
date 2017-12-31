@@ -72,10 +72,12 @@ public class UserAction extends ActionSupport {
     }
 
     public String hello() {
+        HttpServletResponse response = ServletActionContext.getResponse();
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         LOGGER.info("进入hello");
 
-        //list = userService.getUserList(1);
+        list = userService.getUserList(1);
         //userService.updateUser();
 
         return SUCCESS;

@@ -11,7 +11,9 @@
         </action>
 
         <action name="hello" method="hello" class="userAction">
-            <result name="success">/WEB-INF/view/hello.jsp</result>
+            <result type="json" >
+                <param name="root">list</param>
+            </result>
         </action>
 
         <action name="queryUserListAction" class="queryUserListAction">
