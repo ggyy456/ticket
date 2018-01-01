@@ -18,7 +18,7 @@
 
     <statement id="getList" parameterClass="user" resultClass="user">
         select user_id as userId,user_name as userName,sex,phone,province,city,source,create_ts as createTs From t_user
-        where user_id = #userId:INTEGER#
+        where city = #city:VARCHAR#
     </statement>
 
     <statement id="getEntity" parameterClass="int" resultClass="user">

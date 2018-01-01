@@ -43,6 +43,8 @@ public class UserAction extends ActionSupport {
 
     private static final long serialVersionUID = 1L;
 
+    private String city;
+
     public String execute(){
         return SUCCESS;
     }
@@ -57,7 +59,7 @@ public class UserAction extends ActionSupport {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-            list = userService.getUserList(1);
+            list = userService.getUserList(city);
             //userService.updateUser();
 
             if ("admin".equals(username) && "123456".equals(password)) {
@@ -77,10 +79,17 @@ public class UserAction extends ActionSupport {
 
         LOGGER.info("进入hello");
 
-        list = userService.getUserList(1);
-        //userService.updateUser();
+        list = userService.getUserList(city);
 
         return SUCCESS;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setUserService(UserService userService) {

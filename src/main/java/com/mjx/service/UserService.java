@@ -11,7 +11,7 @@ import java.util.*;
  * Created by Administrator on 2017/8/2 0002.
  */
 public interface UserService {
-    List<User> getUserList(int id);
+    List<User> getUserList(String city);
 
     void saveUser();
 

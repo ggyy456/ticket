@@ -24,10 +24,10 @@ public class UserServiceImpl implements UserService {
     /*
             * 获取列表
             * */
-    public List<User> getUserList(int id){
+    public List<User> getUserList(String city){
         List<User> list = null;
         User condition = new User();
-        condition.setUserId(id);
+        condition.setCity(city);
 
         list = userDAO.getList(condition);
         //list = userDAO.getAll();
