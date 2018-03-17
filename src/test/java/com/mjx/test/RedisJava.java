@@ -1,57 +1,223 @@
 package com.mjx.test;
 
+import com.alibaba.fastjson.JSON;
+import com.mjx.entity.Ticket;
+import com.mjx.entity.Train;
 import com.mjx.entity.TrainDTO;
 import com.mjx.redis.JedisUtil;
 import com.mjx.redis.SerializeUtil;
+import com.mjx.util.ConfigHelper;
 import redis.clients.jedis.Jedis;
-import redis.clients.util.SafeEncoder;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Administrator on 2017-12-5.
  */
 public class RedisJava {
     public static void main(String[] args) {
-
-
+        test5();
 
     }
 
-    //直接使用RedisUtils实例进行五大数据类型的操作：（这样，使用完后会自动归还到池子中）
-    public void test1(){
-        JedisUtil jedisUtil= JedisUtil.getInstance();
-        JedisUtil.Strings strings=jedisUtil.new Strings();
-        strings.set("nnn", "nnnn");
-        System.out.println("-----"+strings.get("nnn"));
-    }
+    /*
+        注：序列化对象时，需要对象也实现Serializable接口
+        正常情况下效率也挺高，但是如果再高并发的情况下，序列化和反序列化消耗太多
+        redis不支持存储object和泛型，是有理由的
+        建议使用json来存储
+    */
+    public static void test1(){
+        Jedis jedis=JedisUtil.getJedis();
+        System.out.println("清空库中所有数据："+jedis.flushDB());
 
-    //通过RedisUtil实例获取Jedis连接对象；这样就可以用原生的方式使用；最后使用完后需要手动将其归还到池子中
-    public void test2(){
-        Jedis jedis=JedisUtil.getInstance().getJedis();
-        for (int i = 0; i < 10; i++) {
-            jedis.set("test", "test");
-            System.out.println(i+"=="+jedis.get("test"));
-
-        }
-        JedisUtil.getInstance().returnJedis(jedis);
-    }
-
-    //将java对象存到redis中
-    public void test3(){
         TrainDTO t1 = new TrainDTO();
         t1.setTrainNo("1111");
-        t1.setTrainType("2");
+        t1.setTrainType("1");
 
-        JedisUtil jedisUtil= JedisUtil.getInstance();
-        Jedis jedis=JedisUtil.getInstance().getJedis();
+        TrainDTO t2 = new TrainDTO();
+        t2.setTrainNo("2222");
+        t2.setTrainType("2");
 
-        JedisUtil.Strings strings=jedisUtil.new Strings();
-        strings.set("object3", SerializeUtil.serialize(t1));
+        List<TrainDTO> list1 = new ArrayList<TrainDTO>();
+        list1.add(t1);
+        list1.add(t2);
 
-        //jedis.set(SafeEncoder.encode("object1"),SerializeUtil.serialize(p));
-        byte[] personBy = jedis.get(SafeEncoder.encode("object3"));
-        TrainDTO t2 = (TrainDTO) SerializeUtil.unserialize(personBy);
-        System.out.println(t2.getTrainNo());
+        jedis.set("list".getBytes(), SerializeUtil.serialize(list1));
+
+        byte[] bs = jedis.get("list".getBytes());
+        List<TrainDTO> list2 = (List<TrainDTO>)SerializeUtil.unserialize(bs);
+        for(TrainDTO dto : list2){
+            System.out.println("list TrainNo is:" + dto.getTrainNo());
+        }
+
+    }
+
+    /*
+        JSON方式存储list
+     */
+    public static void test2(){
+        Jedis jedis=JedisUtil.getJedis();
+        System.out.println("清空库中所有数据："+jedis.flushDB());
+
+        TrainDTO t1 = new TrainDTO();
+        t1.setTrainNo("1111");
+        t1.setTrainType("1");
+
+        TrainDTO t2 = new TrainDTO();
+        t2.setTrainNo("2222");
+        t2.setTrainType("2");
+
+        List<TrainDTO> list1 = new ArrayList<TrainDTO>();
+        list1.add(t1);
+        list1.add(t2);
+
+        String jsonList = JSON.toJSONString(list1);
+        jedis.set("jsonList",jsonList);
+
+        List<TrainDTO> list2 = JSON.parseArray(jedis.get("jsonList"),TrainDTO.class);
+        System.out.println(list2.get(1).getTrainNo());
+    }
+
+    public static void test3(){
+        Jedis jedis=JedisUtil.getJedis();
+        System.out.println("清空库中所有数据："+jedis.flushDB());
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            System.out.println("正在连接数据库..........");
+            Class.forName(ConfigHelper.getJdbcDriver());
+            String url = ConfigHelper.getJdbcUrl();
+            String user = ConfigHelper.getJdbcUsername();
+            String pwd = ConfigHelper.getJdbcPassword();
+            conn=(Connection) DriverManager.getConnection(url,user,pwd);
+            System.out.println("数据库连接成功！！！");
+
+            String sql="select  TRAIN_ID, TRAIN_NO ,TRAIN_TYPE ,BEGIN_STATION ,END_STATION ,BEGIN_TIME ,END_TIME ,TAKE_TIME From T_TRAIN ";
+
+            stmt = (Statement) conn.createStatement();
+            stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
+            rs=(ResultSet) stmt.getResultSet();
+            List<Train> list = new ArrayList<Train>();
+            while(rs.next()) { //当前记录指针移动到下一条记录上
+                Train t = new Train();
+                t.setTrainId(rs.getInt("TRAIN_ID"));
+                t.setTrainNo(rs.getString("TRAIN_NO"));
+                t.setTrainType(rs.getString("TRAIN_TYPE"));
+                t.setBeginStation(rs.getString("BEGIN_STATION"));
+                t.setEndStation(rs.getString("END_STATION"));
+                t.setBeginTime(rs.getString("BEGIN_TIME"));
+                t.setEndTime(rs.getString("END_TIME"));
+                t.setTakeTime(rs.getString("TAKE_TIME"));
+                list.add(t);
+            }
+
+            long startTime=System.currentTimeMillis();
+
+            //JedisUtil.setObject("train",list);
+            for(Train tr:list){
+                String id = tr.getTrainId().toString();
+                jedis.hset("trainList", id , JSON.toJSONString(tr));
+                jedis.sadd(tr.getBeginStation() , id);
+                jedis.sadd(tr.getEndStation() , id);
+                jedis.sadd(tr.getTrainType(), id);
+            }
+
+            long endTime=System.currentTimeMillis();
+            float excTime=(float)(endTime-startTime)/1000;
+            System.out.println("执行时间："+excTime+"s");
+
+            rs.close();
+            stmt.close();
+            conn.close();
+
+            System.out.println("完成！！！");
+
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void test4(){
+        Jedis jedis=JedisUtil.getJedis();
+        System.out.println("清空库中所有数据："+jedis.flushDB());
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try{
+            System.out.println("正在连接数据库..........");
+            Class.forName(ConfigHelper.getJdbcDriver());
+            String url = ConfigHelper.getJdbcUrl();
+            String user = ConfigHelper.getJdbcUsername();
+            String pwd = ConfigHelper.getJdbcPassword();
+            conn=(Connection) DriverManager.getConnection(url,user,pwd);
+            System.out.println("数据库连接成功！！！");
+
+            String sql="select  TICKET_ID , TRAIN_ID  ,TICKET_NO ,TICKET_TIME ,TICKET_TYPE ,IS_SELL  From T_TICKET ";
+
+            stmt = (Statement) conn.createStatement();
+            stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
+            rs=(ResultSet) stmt.getResultSet();
+            List<Ticket> list = new ArrayList<Ticket>();
+            while(rs.next()) { //当前记录指针移动到下一条记录上
+                Ticket t = new Ticket();
+                t.setTicketId(rs.getInt("TICKET_ID"));
+                t.setTrainId(rs.getInt("TRAIN_ID"));
+                t.setTicketNo(rs.getString("TICKET_NO"));
+                t.setTicketTime(rs.getString("TICKET_TIME"));
+                t.setTicketType(rs.getString("TICKET_TYPE"));
+                t.setIsSell(rs.getString("IS_SELL"));
+                list.add(t);
+            }
+
+            long startTime=System.currentTimeMillis();
+
+            JedisUtil.setObject("ticket",list);
+
+            long endTime=System.currentTimeMillis();
+            float excTime=(float)(endTime-startTime)/1000;
+            System.out.println("执行时间："+excTime+"s");
+
+            rs.close();
+            stmt.close();
+            conn.close();
+
+            System.out.println("完成！！！");
+
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void test5(){
+        long startTime=System.currentTimeMillis();
+
+        Jedis jedis=JedisUtil.getJedis();
+        //完成select * from t_train where train_type='G'
+        Set<String> ids = jedis.smembers("G");
+        String[] idArr = ids.toArray(new String[]{});
+        List<String> trainJsonList = jedis.hmget("trainList", idArr);    //从user的hash类型中获取多个filed的value,传入的field可以为字符串数组
+        System.out.println(trainJsonList.size());   //打印出所有的满足条件的user
+
+        long endTime=System.currentTimeMillis();
+        float excTime=(float)(endTime-startTime)/1000;
+        System.out.println("执行时间："+excTime+"s");
+
+
     }
 }
