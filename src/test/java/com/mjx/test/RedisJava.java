@@ -127,8 +127,8 @@ public class RedisJava {
             for(Train tr:list){
                 String id = tr.getTrainId().toString();
                 jedis.hset("trainList", id , JSON.toJSONString(tr));
-                jedis.sadd(tr.getBeginStation() , id);
-                jedis.sadd(tr.getEndStation() , id);
+                jedis.sadd("始"+tr.getBeginStation() , id);
+                jedis.sadd("终"+tr.getEndStation() , id);
                 jedis.sadd(tr.getTrainType(), id);
             }
 
@@ -205,14 +205,20 @@ public class RedisJava {
     }
 
     public static void test5(){
-        long startTime=System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-        Jedis jedis=JedisUtil.getJedis();
+        Jedis jedis = JedisUtil.getJedis();
         //完成select * from t_train where train_type='G'
-        Set<String> ids = jedis.smembers("G");
+        //Set<String> ids = jedis.smembers("G");
+
+        //完成select * from t_train where begin_station='北京' and end_station='武汉'
+        Set<String> ids = jedis.sinter("始北京","终武汉");  //得到两个id集合的交集
+
         String[] idArr = ids.toArray(new String[]{});
         List<String> trainJsonList = jedis.hmget("trainList", idArr);    //从user的hash类型中获取多个filed的value,传入的field可以为字符串数组
-        System.out.println(trainJsonList.size());   //打印出所有的满足条件的user
+        //jedis.sort()
+        System.out.println(ids);
+        System.out.println(trainJsonList);   //打印出所有的满足条件的user
 
         long endTime=System.currentTimeMillis();
         float excTime=(float)(endTime-startTime)/1000;
@@ -220,4 +226,7 @@ public class RedisJava {
 
 
     }
+
+
+
 }
