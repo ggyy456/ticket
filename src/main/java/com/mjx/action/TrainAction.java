@@ -28,6 +28,11 @@ public class TrainAction extends ActionSupport {
         return SUCCESS;
     }
 
+    public String toRedisListPage() {
+        LOGGER.info("进入TrainAction的queryRedisList方法");
+        return SUCCESS;
+    }
+
     public String concurrencyTest(){
         trainService.concurrencyTest();
         return SUCCESS;

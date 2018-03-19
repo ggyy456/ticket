@@ -16,6 +16,16 @@
             </result>
         </action>
 
+        <action name="toRedisListPage" method="toRedisListPage" class="trainAction">
+            <result name="success">/WEB-INF/view/redisList.jsp</result>
+        </action>
+
+        <action name="queryRedisListAction" class="queryRedisAction">
+            <result type="json" >
+                <param name="root">model</param>
+            </result>
+        </action>
+
         <action name="concurrencyTest" method="concurrencyTest" class="trainAction">
             <result name="success">/WEB-INF/view/index.jsp</result>
         </action>

@@ -47,4 +47,7 @@
     </bean>
     <bean id="queryAppService" class="com.mjx.ibatis.PagingAppServiceImpl" />
 
+    <bean id="queryRedisAction" class="com.mjx.redis.AbstractRedisAction" scope="prototype" >
+    </bean>
+
 </beans>
