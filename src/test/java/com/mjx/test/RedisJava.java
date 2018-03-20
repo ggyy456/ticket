@@ -1,8 +1,8 @@
 package com.mjx.test;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mjx.entity.Ticket;
-import com.mjx.entity.Train;
 import com.mjx.entity.TrainDTO;
 import com.mjx.redis.JedisUtil;
 import com.mjx.redis.SerializeUtil;
@@ -14,7 +14,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -23,8 +22,10 @@ import java.util.Set;
  */
 public class RedisJava {
     public static void main(String[] args) {
-        test5();
+        //Jedis jedis=JedisUtil.getJedis();
+        //System.out.println("清空库中所有数据："+jedis.flushDB());
 
+        test4();
     }
 
     /*
@@ -87,7 +88,7 @@ public class RedisJava {
 
     public static void test3(){
         Jedis jedis=JedisUtil.getJedis();
-        System.out.println("清空库中所有数据："+jedis.flushDB());
+        //System.out.println("清空库中所有数据："+jedis.flushDB());
 
         Connection conn = null;
         Statement stmt = null;
@@ -107,9 +108,9 @@ public class RedisJava {
             stmt = (Statement) conn.createStatement();
             stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
             rs=(ResultSet) stmt.getResultSet();
-            List<Train> list = new ArrayList<Train>();
+            List<TrainDTO> list = new ArrayList<TrainDTO>();
             while(rs.next()) { //当前记录指针移动到下一条记录上
-                Train t = new Train();
+                TrainDTO t = new TrainDTO();
                 t.setTrainId(rs.getInt("TRAIN_ID"));
                 t.setTrainNo(rs.getString("TRAIN_NO"));
                 t.setTrainType(rs.getString("TRAIN_TYPE"));
@@ -124,12 +125,12 @@ public class RedisJava {
             long startTime=System.currentTimeMillis();
 
             //JedisUtil.setObject("train",list);
-            for(Train tr:list){
+            for(TrainDTO tr:list){
                 String id = tr.getTrainId().toString();
-                jedis.hset("trainList", id , JSON.toJSONString(tr));
-                jedis.sadd("始"+tr.getBeginStation() , id);
-                jedis.sadd("终"+tr.getEndStation() , id);
-                jedis.sadd(tr.getTrainType(), id);
+                jedis.hset("data:trainList", id , JSON.toJSONString(tr));
+                jedis.sadd("query:begin:"+tr.getBeginStation() , id);
+                jedis.sadd("query:end:"+tr.getEndStation() , id);
+                jedis.sadd("query:type:"+tr.getTrainType(), id);
             }
 
             long endTime=System.currentTimeMillis();
@@ -151,7 +152,7 @@ public class RedisJava {
 
     public static void test4(){
         Jedis jedis=JedisUtil.getJedis();
-        System.out.println("清空库中所有数据："+jedis.flushDB());
+        //System.out.println("清空库中所有数据："+jedis.flushDB());
 
         Connection conn = null;
         Statement stmt = null;
@@ -185,7 +186,12 @@ public class RedisJava {
 
             long startTime=System.currentTimeMillis();
 
-            JedisUtil.setObject("ticket",list);
+            //JedisUtil.setObject("ticket",list);
+            for(Ticket t:list){
+                String id = t.getTicketId().toString();
+                jedis.hset("data:ticketList", id , JSON.toJSONString(t));
+                jedis.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
+            }
 
             long endTime=System.currentTimeMillis();
             float excTime=(float)(endTime-startTime)/1000;
