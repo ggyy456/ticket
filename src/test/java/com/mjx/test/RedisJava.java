@@ -1,7 +1,6 @@
 package com.mjx.test;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.mjx.entity.Ticket;
 import com.mjx.entity.TrainDTO;
 import com.mjx.redis.JedisUtil;
@@ -125,12 +124,32 @@ public class RedisJava {
             long startTime=System.currentTimeMillis();
 
             //JedisUtil.setObject("train",list);
+            String t1 = "00:00";
+            String t2 = "06:00";
+            String t3 = "12:00";
+            String t4 = "18:00";
+            String t5 = "24:00";
+
             for(TrainDTO tr:list){
                 String id = tr.getTrainId().toString();
+                String t = tr.getBeginTime();
                 jedis.hset("data:trainList", id , JSON.toJSONString(tr));
                 jedis.sadd("query:begin:"+tr.getBeginStation() , id);
                 jedis.sadd("query:end:"+tr.getEndStation() , id);
                 jedis.sadd("query:type:"+tr.getTrainType(), id);
+
+                if(t.compareTo(t1)>=0 && t.compareTo(t2)<=0){
+                    jedis.sadd("query:time1", id);
+                }
+                if(t.compareTo(t2)>=0 && t.compareTo(t3)<=0){
+                    jedis.sadd("query:time2", id);
+                }
+                if(t.compareTo(t3)>=0 && t.compareTo(t4)<=0){
+                    jedis.sadd("query:time3", id);
+                }
+                if(t.compareTo(t4)>=0 && t.compareTo(t5)<=0){
+                    jedis.sadd("query:time4", id);
+                }
             }
 
             long endTime=System.currentTimeMillis();
