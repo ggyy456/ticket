@@ -52,7 +52,7 @@ public class AbstractRedisAction extends ActionSupport implements ModelDriven {
             condition.add(beginTime);
         }
 
-        Jedis jedis = JedisUtil.getJedis();
+        JedisUtil jedis= JedisUtil.getInstance();
         Set<String> ids = new HashSet<String>();
         Set<String> stationIds = jedis.sinter(condition.toArray(new String[]{}));  //得到两个id集合的交集
         ids.addAll(stationIds);

@@ -4,15 +4,19 @@ import com.mjx.entity.Train;
 import com.mjx.entity.TrainDTO;
 import com.mjx.entity.User;
 import com.mjx.ibatis.IDAO;
+import com.mjx.redis.JedisUtil;
 import com.mjx.service.TrainService;
 import com.mjx.service.UserService;
 import com.mjx.util.ConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 
+import javax.swing.text.html.HTMLDocument;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Administrator on 2017/8/20 0020.
@@ -21,6 +25,7 @@ import java.util.Random;
 @SuppressWarnings("unchecked")
 public class TrainServiceImpl implements TrainService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrainServiceImpl.class);
+    private Lock lock = new ReentrantLock();    //注意这个地方
 
     private IDAO<Train> trainDAO;
 
@@ -32,41 +37,46 @@ public class TrainServiceImpl implements TrainService {
         this.trainDAO = trainDAO;
     }
 
-    public synchronized void concurrencyTest(){
-        Random rd = new Random();
-        int userId = rd.nextInt(54753)+1;
+    //lock比synchronized 效率稍高，并发访问时
+    public void concurrencyTest(){
+        Jedis jedis= JedisUtil.getInstance().getJedis();
+        lock.lock();
+        try {
+            Random rd = new Random();
+            int userId = rd.nextInt(54753)+1;
 
-        LOGGER.info(userId+"参加抢票");
+            LOGGER.info(userId+"参加抢票");
 
-        TrainDTO cond = new TrainDTO();
-        cond.setBeginStation("北京");
-        cond.setEndStation("上海");
-        cond.setTrainType("'Z'");
-        cond.setTicketType("硬卧");
-        cond.setIsSell("0");
-        String driver = ConfigHelper.getJdbcDriver();
-        if(driver.equals("com.mysql.jdbc.Driver")){
-            cond.setDynamicSql(" limit 1");
-        }
-        else{
-            cond.setDynamicSql(" fetch first 1 rows only");
-        }
+            String beginStation = "query:begin:北京";
+            String endStation = "query:end:上海";
+            String trainType = "query:type:G";
+            String ticketType = "二等座";
 
-        TrainDTO ticket = (TrainDTO)trainDAO.execute("getEntityTicket",cond);
-        if(ticket!=null){
-            cond = new TrainDTO();
-            cond.setUserId(userId);
-            cond.setTrainId(ticket.getTrainId());
-            cond.setTicketId(ticket.getTicketId());
-            Integer count = (Integer)trainDAO.execute("getEntityUser",cond);
-            if(count==0){
-                ticket.setUserId(userId);
-                trainDAO.execute("saveUserTicket",ticket);
-                trainDAO.execute("updateTicket",ticket);
+            Set<String> trainIds = jedis.sinter(beginStation,endStation,trainType);  //得到id交集
+            Iterator<String> trainIt = trainIds.iterator();
 
-                LOGGER.info("恭喜"+userId+"抢到票"+ticket.getTicketId());
+            outer:while(trainIt.hasNext()){
+                String trainId = trainIt.next();
+                Set<String> ticketIds = jedis.smembers("join:"+trainId+ticketType);
+                Iterator<String> ticketIt = ticketIds.iterator();
+
+                while (ticketIt.hasNext()){
+                    String ticketId = ticketIt.next();
+                    String isSell = jedis.hget("data:ticketList",ticketId);
+                    if("0".equals(isSell)){
+                        jedis.hset("data:ticketList",ticketId,"1");
+                        jedis.lpush("data:userTicket",userId+","+ticketId);
+                        jedis.srem("join:"+trainId+ticketType,ticketId);
+                        LOGGER.info("恭喜"+userId+"抢到票"+ticketId);
+                        break outer;
+                    }
+                }
             }
+        }finally {
+            jedis.close();
+            lock.unlock();
         }
+
 
     }
 

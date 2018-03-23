@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -21,10 +22,32 @@ import java.util.Set;
  */
 public class RedisJava {
     public static void main(String[] args) {
-        //Jedis jedis=JedisUtil.getJedis();
-        //System.out.println("清空库中所有数据："+jedis.flushDB());
+        JedisUtil jedis = JedisUtil.getInstance();
+        //System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
 
         test4();
+
+        jedis.del("data:userTicket");
+//        List<String> list = jedis.lrange("data:userTicket", 0, -1);
+//        for(String s:list){
+//            System.out.println(s);
+//        }
+//
+//        System.out.println(list.size());
+
+
+
+    }
+
+    public static void batchDel(String pre_str){
+        JedisUtil jedis = JedisUtil.getInstance();
+        Set<String> set = jedis.keys(pre_str +"*");
+        Iterator<String> it = set.iterator();
+        while(it.hasNext()){
+            String keyStr = it.next();
+            System.out.println(keyStr);
+            jedis.del(keyStr);
+        }
     }
 
     /*
@@ -34,8 +57,8 @@ public class RedisJava {
         建议使用json来存储
     */
     public static void test1(){
-        Jedis jedis=JedisUtil.getJedis();
-        System.out.println("清空库中所有数据："+jedis.flushDB());
+        JedisUtil jedis= JedisUtil.getInstance();
+        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
 
         TrainDTO t1 = new TrainDTO();
         t1.setTrainNo("1111");
@@ -63,8 +86,8 @@ public class RedisJava {
         JSON方式存储list
      */
     public static void test2(){
-        Jedis jedis=JedisUtil.getJedis();
-        System.out.println("清空库中所有数据："+jedis.flushDB());
+        JedisUtil jedis= JedisUtil.getInstance();
+        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
 
         TrainDTO t1 = new TrainDTO();
         t1.setTrainNo("1111");
@@ -86,7 +109,7 @@ public class RedisJava {
     }
 
     public static void test3(){
-        Jedis jedis=JedisUtil.getJedis();
+        Jedis jedis = JedisUtil.getInstance().getJedis();
         //System.out.println("清空库中所有数据："+jedis.flushDB());
 
         Connection conn = null;
@@ -165,13 +188,17 @@ public class RedisJava {
         }catch(Exception e){
             System.out.println(e.getMessage());
             e.printStackTrace();
+        }finally {
+            jedis.close();
         }
 
     }
 
     public static void test4(){
-        Jedis jedis=JedisUtil.getJedis();
-        //System.out.println("清空库中所有数据："+jedis.flushDB());
+        Jedis jedis= JedisUtil.getInstance().getJedis();
+        //清除当前数据
+        jedis.del("data:ticketList");
+        batchDel("join:");
 
         Connection conn = null;
         Statement stmt = null;
@@ -186,7 +213,7 @@ public class RedisJava {
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 
-            String sql="select  TICKET_ID , TRAIN_ID  ,TICKET_NO ,TICKET_TIME ,TICKET_TYPE ,IS_SELL  From T_TICKET ";
+            String sql="select  TICKET_ID , TRAIN_ID  ,TICKET_TYPE ,IS_SELL  From T_TICKET ";
 
             stmt = (Statement) conn.createStatement();
             stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
@@ -196,8 +223,6 @@ public class RedisJava {
                 Ticket t = new Ticket();
                 t.setTicketId(rs.getInt("TICKET_ID"));
                 t.setTrainId(rs.getInt("TRAIN_ID"));
-                t.setTicketNo(rs.getString("TICKET_NO"));
-                t.setTicketTime(rs.getString("TICKET_TIME"));
                 t.setTicketType(rs.getString("TICKET_TYPE"));
                 t.setIsSell(rs.getString("IS_SELL"));
                 list.add(t);
@@ -205,10 +230,9 @@ public class RedisJava {
 
             long startTime=System.currentTimeMillis();
 
-            //JedisUtil.setObject("ticket",list);
             for(Ticket t:list){
                 String id = t.getTicketId().toString();
-                jedis.hset("data:ticketList", id , JSON.toJSONString(t));
+                jedis.hset("data:ticketList", id , t.getIsSell());
                 jedis.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
             }
 
@@ -225,6 +249,8 @@ public class RedisJava {
         }catch(Exception e){
             System.out.println(e.getMessage());
             e.printStackTrace();
+        }finally {
+            jedis.close();
         }
 
     }
@@ -232,7 +258,7 @@ public class RedisJava {
     public static void test5(){
         long startTime = System.currentTimeMillis();
 
-        Jedis jedis = JedisUtil.getJedis();
+        JedisUtil jedis= JedisUtil.getInstance();
         //完成select * from t_train where train_type='G'
         //Set<String> ids = jedis.smembers("G");
 

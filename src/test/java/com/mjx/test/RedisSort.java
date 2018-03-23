@@ -15,7 +15,7 @@ public class RedisSort {
     }
 
     public static void testSort1() {
-        Jedis jedis = JedisUtil.getJedis();
+        JedisUtil jedis = JedisUtil.getInstance();
         jedis.sadd("tom:friend:list", "123");  //tom的好友列表
         jedis.sadd("tom:friend:list", "456");
         jedis.sadd("tom:friend:list", "789");
@@ -44,7 +44,7 @@ public class RedisSort {
     }
 
     public static void testSort2() {
-        Jedis jedis = JedisUtil.getJedis();
+        JedisUtil jedis = JedisUtil.getInstance();
         jedis.del("user:66", "user:55", "user:33", "user:22", "user:11", "userlist");
         jedis.lpush("userlist", "33");
         jedis.lpush("userlist", "22");
