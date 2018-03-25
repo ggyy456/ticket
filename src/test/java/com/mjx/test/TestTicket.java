@@ -4,7 +4,6 @@ import com.mjx.entity.ConstantTicket;
 import com.mjx.entity.Train;
 import com.mjx.util.ConfigHelper;
 import com.mjx.util.UUIDGenerator;
-
 import java.sql.*;
 import java.util.*;
 
@@ -16,6 +15,16 @@ public class TestTicket {
         listToDatabase(databaseToList());
     }
 
+    public static String citySql(String city){
+        String sql = "";
+        for(String c:ConstantTicket.HOT_CITY){
+            if(!city.equals(c)){
+                sql += ",'"+c+"'";
+            }
+        }
+        return sql.substring(1);
+    }
+
     public static List<Train> databaseToList(){
         Connection conn = null;
         Statement stmt = null;
@@ -24,14 +33,17 @@ public class TestTicket {
         try{
             System.out.println("正在连接数据库..........");
             Class.forName(ConfigHelper.getJdbcDriver());
-            String url = ConfigHelper.getJdbcUrl();
+            String url = ConfigHelper.getJdbcUrl()+"?useUnicode=true&characterEncoding=utf-8";
             String user = ConfigHelper.getJdbcUsername();
             String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 
-            String sql="select TRAIN_ID,TRAIN_TYPE From T_TRAIN where BEGIN_STATION='北京' "
-                    +"and END_STATION in('长沙','长春','成都','福州','广州','贵阳','呼和浩特','哈尔滨')";
+            String city = "厦门";
+            String citySql = citySql(city);
+
+            String sql="select TRAIN_ID ,TRAIN_TYPE  From T_TRAIN where BEGIN_STATION='"+city+"' "
+                    +"and END_STATION in("+citySql+")";
 
             stmt = (Statement) conn.createStatement();
             stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
@@ -66,10 +78,11 @@ public class TestTicket {
         try{
             System.out.println("正在连接数据库..........");
             Class.forName(ConfigHelper.getJdbcDriver());
-            String url = ConfigHelper.getJdbcUrl();
+            String url = ConfigHelper.getJdbcUrl()+"?useUnicode=true&characterEncoding=utf-8&useServerPrepStmts=false&rewriteBatchedStatements=true";
             String user = ConfigHelper.getJdbcUsername();
             String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
+            conn.setAutoCommit(false); // 设置手动提交
             System.out.println("数据库连接成功！！！");
 
             String sql="insert into t_ticket(train_id,ticket_no,ticket_time,ticket_type,is_sell) values(?,?,?,?,?)";
@@ -104,10 +117,13 @@ public class TestTicket {
                         pstmt.setString(3,"2017-09-18");
                         pstmt.setString(4,ticketTypes[j]);
                         pstmt.setString(5,"0");
-                        pstmt.execute();
+                        pstmt.addBatch();
                     }
                 }
             }
+
+            pstmt.executeBatch(); // 执行批量处理
+            conn.commit();  // 提交
 
             pstmt.close();
             conn.close();

@@ -25,15 +25,15 @@ public class RedisJava {
         JedisUtil jedis = JedisUtil.getInstance();
         //System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
 
-        test4();
+//        test3();
 
-        jedis.del("data:userTicket");
-//        List<String> list = jedis.lrange("data:userTicket", 0, -1);
-//        for(String s:list){
-//            System.out.println(s);
-//        }
-//
-//        System.out.println(list.size());
+//        jedis.del("data:userTicket");
+        List<String> list = jedis.lrange("data:trainList", 0, -1);
+        for(String s:list){
+            System.out.println(s);
+        }
+
+        System.out.println(list.size());
 
 
 
