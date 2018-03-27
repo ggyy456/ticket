@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/ticket"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxActive="100"
+              maxIdle="30"
+              maxWait="5000"
+              username="root"
+              password="root"
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/ticket"
+    />
+
+    <Transaction factory="com.atomikos.icatch.jta.UserTransactionFactory"/>
+
+    <Resource name="jdbc/atomikos"
+              auth="Container"
+              type="com.atomikos.jdbc.AtomikosDataSourceBean"
+              factory="com.atomikos.tomcat.BeanFactory"
+              uniqueResourceName="jdbc/atomikos"
+              xaDataSourceClassName="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource"
+              minPoolSize="5"
+              maxPoolSize="300"
+              xaProperties.databaseName="ticket"
+              xaProperties.serverName="localhost"
+              xaProperties.portNumber="3306"
+              xaProperties.user="root"
+              xaProperties.password="root"
+              xaProperties.url="jdbc:mysql://localhost:3306/ticket"
+    />
+
+</Context>
