@@ -5,3 +5,6 @@ spring aop控制事物
 数据库表设计
 并发控制
 用apache搭建集群 http://www.cnblogs.com/God-froest/p/apache_tomcat.html
+
+多线程生成和缓存redis数据
+redis数据和数据库同步

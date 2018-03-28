@@ -10,22 +10,37 @@ import java.util.*;
 /**
  * Created by Administrator on 2017-9-18.
  */
-public class TestTicket {
+public class TestTicket implements Runnable{
+
     public static void main(String[] args) {
+//        int n = 0;
+//        for(int i=0;i<33;i=i+3){
+            new Thread(new TestTicket(0)).start();
+//        }
+    }
+
+    private int num;
+
+    public TestTicket(int num) {
+        this.num = num;
+    }
+
+    @Override
+    public void run() {
         listToDatabase(databaseToList());
     }
 
-    public static String citySql(String city){
+    public String getCitys(int begin){
         String sql = "";
-        for(String c:ConstantTicket.HOT_CITY){
-            if(!city.equals(c)){
-                sql += ",'"+c+"'";
+        for(int i=0;i<ConstantTicket.HOT_CITY.length;i++){
+            if(i>=begin && i<=begin+2){
+                sql += ",'"+ConstantTicket.HOT_CITY[i]+"'";
             }
         }
         return sql.substring(1);
     }
 
-    public static List<Train> databaseToList(){
+    public List<Train> databaseToList(){
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -33,17 +48,16 @@ public class TestTicket {
         try{
             System.out.println("正在连接数据库..........");
             Class.forName(ConfigHelper.getJdbcDriver());
-            String url = ConfigHelper.getJdbcUrl()+"?useUnicode=true&characterEncoding=utf-8";
+            String url = ConfigHelper.getJdbcUrl();//+"&useUnicode=true&characterEncoding=utf-8";
             String user = ConfigHelper.getJdbcUsername();
             String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 
-            String city = "厦门";
-            String citySql = citySql(city);
+            String citys = getCitys(num);
 
-            String sql="select TRAIN_ID ,TRAIN_TYPE  From T_TRAIN where BEGIN_STATION='"+city+"' "
-                    +"and END_STATION in("+citySql+")";
+            //String sql="select TRAIN_ID ,TRAIN_TYPE  From T_TRAIN where BEGIN_STATION in("+citys+")";
+            String sql="select TRAIN_ID ,TRAIN_TYPE  From T_TRAIN ";
 
             stmt = (Statement) conn.createStatement();
             stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
@@ -60,7 +74,7 @@ public class TestTicket {
             stmt.close();
             conn.close();
 
-            System.out.println("导入完成！！！");
+            System.out.println("查询完成！！！");
 
             return list;
 
@@ -71,14 +85,14 @@ public class TestTicket {
         return null;
     }
 
-    public static void listToDatabase(List<Train> list){
+    public void listToDatabase(List<Train> list){
         Connection conn = null;
         PreparedStatement pstmt = null;
-
+        long startTime=System.currentTimeMillis();
         try{
             System.out.println("正在连接数据库..........");
             Class.forName(ConfigHelper.getJdbcDriver());
-            String url = ConfigHelper.getJdbcUrl()+"?useUnicode=true&characterEncoding=utf-8&useServerPrepStmts=false&rewriteBatchedStatements=true";
+            String url = ConfigHelper.getJdbcUrl();//+"&useUnicode=true&characterEncoding=utf-8";
             String user = ConfigHelper.getJdbcUsername();
             String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
@@ -111,7 +125,6 @@ public class TestTicket {
 
                 for (int j = 0; j < ticketTypes.length; j++) {
                     for (int k = 0; k < ticketTypeNums[j]; k++) {
-                        System.out.println(trainId);
                         pstmt.setInt(1,trainId);
                         pstmt.setString(2,UUIDGenerator.getUUID());
                         pstmt.setString(3,"2017-09-18");
@@ -119,6 +132,13 @@ public class TestTicket {
                         pstmt.setString(5,"0");
                         pstmt.addBatch();
                     }
+                }
+
+                if(i>0 && i%800==0){
+                    pstmt.executeBatch();
+                    conn.commit();
+
+                    System.out.println("批次"+i+"导入完成！！！");
                 }
             }
 
@@ -128,7 +148,9 @@ public class TestTicket {
             pstmt.close();
             conn.close();
 
-            System.out.println("导入完成！！！");
+            long endTime=System.currentTimeMillis();
+            float excTime=(float)(endTime-startTime)/1000;
+            System.out.println("执行时间："+excTime+"s");
 
         }catch(Exception e){
             System.out.println(e.getMessage());

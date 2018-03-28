@@ -14,7 +14,7 @@ import java.util.Random;
 public class TestTrain {
 
     public static void main(String[] args) {
-        //sqlToDatabase();
+        sqlToDatabase();
     }
 
     public static void sqlToDatabase(){
@@ -28,6 +28,7 @@ public class TestTrain {
             String user = ConfigHelper.getJdbcUsername();
             String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
+            conn.setAutoCommit(false); // 设置手动提交
             System.out.println("数据库连接成功！！！");
 
             String sql="insert into t_train(train_no,train_type,begin_station,end_station,begin_time,end_time,take_time) values(?,?,?,?,?,?,?)";
@@ -43,6 +44,9 @@ public class TestTrain {
                     }
                 }
             }
+            pstmt.executeBatch(); // 执行批量处理
+            conn.commit();  // 提交
+
             pstmt.close();
             conn.close();
 
@@ -75,7 +79,7 @@ public class TestTrain {
                     pstmt.setString(5,randomTime(rd));
                     pstmt.setString(6,randomTime(rd));
                     pstmt.setString(7,randomTime(rd));
-                    pstmt.execute();
+                    pstmt.addBatch();
                     System.out.println("beginStation = [" + beginStation + "], endStation = [" + endStation + "]");
                 }
             }

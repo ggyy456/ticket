@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class TestImport {
     public static void main(String[] args) {
-        //excelToDatabase();
+        excelToDatabase();
     }
 
     //将excel文件导入数据库
@@ -28,6 +28,7 @@ public class TestImport {
             String user = ConfigHelper.getJdbcUsername();
             String pwd = ConfigHelper.getJdbcPassword();
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
+            conn.setAutoCommit(false); // 设置手动提交
             System.out.println("数据库连接成功！！！");
 
 
@@ -59,8 +60,12 @@ public class TestImport {
                 pstmt.setString(5,city);
                 pstmt.setString(6,source);
 
-                pstmt.execute();
+                pstmt.addBatch();
             }
+
+            pstmt.executeBatch(); // 执行批量处理
+            conn.commit();  // 提交
+
             pstmt.close();
             conn.close();
 

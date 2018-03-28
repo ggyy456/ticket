@@ -23,12 +23,12 @@ import java.util.Set;
 public class RedisJava {
     public static void main(String[] args) {
         JedisUtil jedis = JedisUtil.getInstance();
-        //System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
-
-//        test3();
+        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
+        //System.out.println(jedis.getJedis().save());
+        //test4();
 
 //        jedis.del("data:userTicket");
-        List<String> list = jedis.lrange("data:trainList", 0, -1);
+        List<String> list = jedis.lrange("data:userTicket", 0, -1);
         for(String s:list){
             System.out.println(s);
         }

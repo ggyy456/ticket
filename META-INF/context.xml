@@ -30,4 +30,39 @@
               xaProperties.url="jdbc:mysql://localhost:3306/ticket"
     />
 
+    <!--  db2连接
+
+    <Resource name="jdbc/ticket"
+                  auth="Container"
+                  type="javax.sql.DataSource"
+                  maxActive="100"
+                  maxIdle="30"
+                  maxWait="5000"
+                  username="las"
+                  password="las"
+                  driverClassName="com.ibm.db2.jcc.DB2Driver"
+                  url="jdbc:db2://192.168.50.66:50001/lasntfdb:currentSchema=LAS;"
+        />
+
+        <Transaction factory="com.atomikos.icatch.jta.UserTransactionFactory"/>
+
+        <Resource name="jdbc/atomikos"
+                  auth="Container"
+                  type="com.atomikos.jdbc.AtomikosDataSourceBean"
+                  factory="com.atomikos.tomcat.BeanFactory"
+                  uniqueResourceName="jdbc/atomikos"
+                  xaDataSourceClassName="com.ibm.db2.jcc.DB2XADataSource"
+                  minPoolSize="5"
+                  maxPoolSize="500"
+                  xaProperties.databaseName="lasntfdb"
+                  xaProperties.currentSchema="LAS"
+                  xaProperties.driverType="4"
+                  xaProperties.serverName="192.168.50.66"
+                  xaProperties.portNumber="50001"
+                  xaProperties.user="las"
+                  xaProperties.password="las"
+        />
+
+    -->
+
 </Context>
