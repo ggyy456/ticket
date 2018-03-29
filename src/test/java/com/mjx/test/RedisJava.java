@@ -22,18 +22,18 @@ import java.util.Set;
  */
 public class RedisJava {
     public static void main(String[] args) {
-        JedisUtil jedis = JedisUtil.getInstance();
-        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
+//        JedisUtil jedis = JedisUtil.getInstance();
+//        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
         //System.out.println(jedis.getJedis().save());
-        //test4();
+        test4();
 
 //        jedis.del("data:userTicket");
-        List<String> list = jedis.lrange("data:userTicket", 0, -1);
-        for(String s:list){
-            System.out.println(s);
-        }
-
-        System.out.println(list.size());
+//        List<String> list = jedis.lrange("data:userTicket", 0, -1);
+//        for(String s:list){
+//            System.out.println(s);
+//        }
+//
+//        System.out.println(list.size());
 
 
 
@@ -197,8 +197,8 @@ public class RedisJava {
     public static void test4(){
         Jedis jedis= JedisUtil.getInstance().getJedis();
         //清除当前数据
-        jedis.del("data:ticketList");
-        batchDel("join:");
+        //jedis.del("data:ticketList");
+        //batchDel("join:");
 
         Connection conn = null;
         Statement stmt = null;
@@ -213,7 +213,9 @@ public class RedisJava {
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 
-            String sql="select  TICKET_ID , TRAIN_ID  ,TICKET_TYPE ,IS_SELL  From T_TICKET ";
+            String sql = "SELECT t1.TICKET_ID , t1.TRAIN_ID  ,t1.TICKET_TYPE ,t1.IS_SELL  from t_ticket t1 "
+                      + "join t_train t2 on t1.train_id=t2.train_id "
+                      + "where t2.begin_station='北京'  ";
 
             stmt = (Statement) conn.createStatement();
             stmt.execute(sql);//执行select语句用executeQuery()方法，执行insert、update、delete语句用executeUpdate()方法。
