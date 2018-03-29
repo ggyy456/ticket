@@ -23,6 +23,10 @@ public class TestTicket implements Runnable{
 //        }
 //        //结束线程池
 //        pool.shutdown();
+
+        ExecutorService pool = Executors.newFixedThreadPool(1);
+        pool.execute(new TestTicket());
+        pool.shutdown();
     }
 
     @Override
@@ -86,7 +90,7 @@ public class TestTicket implements Runnable{
             conn.setAutoCommit(false); // 设置手动提交
             System.out.println("数据库连接成功！！！");
 
-            String sql="insert into t_ticket1(train_id,ticket_no,ticket_time,ticket_type,is_sell) values(?,?,?,?,?)";
+            String sql="insert into t_ticket(train_id,ticket_no,ticket_time,ticket_type,is_sell) values(?,?,?,?,?)";
             pstmt = conn.prepareStatement(sql);
             Map<String,String[]> map = new HashMap<String,String[]>();
             map.put("G",ConstantTicket.TICKET_TYPE_G);
@@ -121,7 +125,7 @@ public class TestTicket implements Runnable{
                     }
                 }
 
-                if(i>0 && i%500==0){
+                if(i>0 && i%800==0){
                     pstmt.executeBatch();
                     conn.commit();
 
