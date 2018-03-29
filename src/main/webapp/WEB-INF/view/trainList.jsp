@@ -168,7 +168,7 @@
     try{
         $(document).ready(function() {
             iscResizeEvent("resizeISCObjWithContainer(myListGrid,'#containerDIV');");
-            _query();
+            //_query();
 
             var beginStation=new Vcity.CitySelector({input:'beginStation'});
             var endStation=new Vcity.CitySelector({input:'endStation'});
