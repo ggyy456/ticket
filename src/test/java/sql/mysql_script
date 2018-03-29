@@ -34,7 +34,8 @@ CREATE TABLE t_ticket  (
   ticket_type	VARCHAR(10),
   is_sell		VARCHAR(2),
 
-  PRIMARY KEY(ticket_id)
+  PRIMARY KEY(ticket_id),
+  INDEX(train_id)
 );
 
 
