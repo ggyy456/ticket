@@ -6,38 +6,28 @@ import com.mjx.util.ConfigHelper;
 import com.mjx.util.UUIDGenerator;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * Created by Administrator on 2017-9-18.
+ * 插入近2000w条测试数据
+ * mysql批量插入速度非常快，需设置useServerPrepStmts=false&rewriteBatchedStatements=true
+ * 多线程插入并不比单线程快，反而线程越多越慢
  */
 public class TestTicket implements Runnable{
 
     public static void main(String[] args) {
-//        int n = 0;
-//        for(int i=0;i<33;i=i+3){
-            new Thread(new TestTicket(0)).start();
+//        ExecutorService pool = Executors.newFixedThreadPool(11);
+//        for(int i=0;i<ConstantTicket.HOT_CITY.length;i=i+3) {
+//            pool.execute(new TestTicket());
 //        }
-    }
-
-    private int num;
-
-    public TestTicket(int num) {
-        this.num = num;
+//        //结束线程池
+//        pool.shutdown();
     }
 
     @Override
     public void run() {
         listToDatabase(databaseToList());
-    }
-
-    public String getCitys(int begin){
-        String sql = "";
-        for(int i=0;i<ConstantTicket.HOT_CITY.length;i++){
-            if(i>=begin && i<=begin+2){
-                sql += ",'"+ConstantTicket.HOT_CITY[i]+"'";
-            }
-        }
-        return sql.substring(1);
     }
 
     public List<Train> databaseToList(){
@@ -54,9 +44,6 @@ public class TestTicket implements Runnable{
             conn=(Connection) DriverManager.getConnection(url,user,pwd);
             System.out.println("数据库连接成功！！！");
 
-            String citys = getCitys(num);
-
-            //String sql="select TRAIN_ID ,TRAIN_TYPE  From T_TRAIN where BEGIN_STATION in("+citys+")";
             String sql="select TRAIN_ID ,TRAIN_TYPE  From T_TRAIN ";
 
             stmt = (Statement) conn.createStatement();
@@ -99,7 +86,7 @@ public class TestTicket implements Runnable{
             conn.setAutoCommit(false); // 设置手动提交
             System.out.println("数据库连接成功！！！");
 
-            String sql="insert into t_ticket(train_id,ticket_no,ticket_time,ticket_type,is_sell) values(?,?,?,?,?)";
+            String sql="insert into t_ticket1(train_id,ticket_no,ticket_time,ticket_type,is_sell) values(?,?,?,?,?)";
             pstmt = conn.prepareStatement(sql);
             Map<String,String[]> map = new HashMap<String,String[]>();
             map.put("G",ConstantTicket.TICKET_TYPE_G);
@@ -134,7 +121,7 @@ public class TestTicket implements Runnable{
                     }
                 }
 
-                if(i>0 && i%800==0){
+                if(i>0 && i%500==0){
                     pstmt.executeBatch();
                     conn.commit();
 
