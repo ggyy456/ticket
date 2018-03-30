@@ -48,7 +48,7 @@ public class TrainServiceImpl implements TrainService {
             LOGGER.info(userId+"参加抢票");
 
             String beginStation = "query:begin:北京";
-            String endStation = "query:end:上海";
+            String endStation = "query:end:天津";
             String trainType = "query:type:G";
             String ticketType = "二等座";
 
@@ -62,10 +62,8 @@ public class TrainServiceImpl implements TrainService {
 
                 while (ticketIt.hasNext()){
                     String ticketId = ticketIt.next();
-                    String isSell = jedis.hget("data:ticketList",ticketId);
-                    if("0".equals(isSell)){
-                        jedis.hset("data:ticketList",ticketId,"1");
-                        jedis.lpush("data:userTicket",userId+","+ticketId);
+                    if(!jedis.hexists("data:userTicket",ticketId)){
+                        jedis.hset("data:userTicket",ticketId,userId+"");
                         jedis.srem("join:"+trainId+ticketType,ticketId);
                         LOGGER.info("恭喜"+userId+"抢到票"+ticketId);
                         break outer;

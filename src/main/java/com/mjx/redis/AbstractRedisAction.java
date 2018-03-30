@@ -69,23 +69,23 @@ public class AbstractRedisAction extends ActionSupport implements ModelDriven {
 
             for(String js:trainJsonList){
                 TrainDTO dto = JSON.parseObject(js, TrainDTO.class);
-                Set<String> firstSeatSet = jedis.smembers("join:"+dto.getTrainId()+"一等座");
-                Set<String> secondSeatSet = jedis.smembers("join:"+dto.getTrainId()+"二等座");
-                Set<String> businessSeatSet = jedis.smembers("join:"+dto.getTrainId()+"商务座");
-                Set<String> hardSeatSet = jedis.smembers("join:"+dto.getTrainId()+"硬座");
-                Set<String> softSeatSet = jedis.smembers("join:"+dto.getTrainId()+"软座");
-                Set<String> hardSleepSet = jedis.smembers("join:"+dto.getTrainId()+"硬卧");
-                Set<String> softSleepSet = jedis.smembers("join:"+dto.getTrainId()+"软卧");
-                Set<String> noSeatSet = jedis.smembers("join:"+dto.getTrainId()+"无座");
+                long firstSeatSet = jedis.scard("join:"+dto.getTrainId()+"一等座");
+                long secondSeatSet = jedis.scard("join:"+dto.getTrainId()+"二等座");
+                long businessSeatSet = jedis.scard("join:"+dto.getTrainId()+"商务座");
+                long hardSeatSet = jedis.scard("join:"+dto.getTrainId()+"硬座");
+                long softSeatSet = jedis.scard("join:"+dto.getTrainId()+"软座");
+                long hardSleepSet = jedis.scard("join:"+dto.getTrainId()+"硬卧");
+                long softSleepSet = jedis.scard("join:"+dto.getTrainId()+"软卧");
+                long noSeatSet = jedis.scard("join:"+dto.getTrainId()+"无座");
 
-                dto.setFirstSeat(firstSeatSet.size()+"");
-                dto.setSecondSeat(secondSeatSet.size()+"");
-                dto.setBusinessSeat(businessSeatSet.size()+"");
-                dto.setHardSeat(hardSeatSet.size()+"");
-                dto.setSoftSeat(softSeatSet.size()+"");
-                dto.setHardSleep(hardSleepSet.size()+"");
-                dto.setSoftSleep(softSleepSet.size()+"");
-                dto.setNoSeat(noSeatSet.size()+"");
+                dto.setFirstSeat(String.valueOf(firstSeatSet));
+                dto.setSecondSeat(String.valueOf(secondSeatSet));
+                dto.setBusinessSeat(String.valueOf(businessSeatSet));
+                dto.setHardSeat(String.valueOf(hardSeatSet));
+                dto.setSoftSeat(String.valueOf(softSeatSet));
+                dto.setHardSleep(String.valueOf(hardSleepSet));
+                dto.setSoftSleep(String.valueOf(softSleepSet));
+                dto.setNoSeat(String.valueOf(noSeatSet));
 
                 trainList.add(dto);
             }

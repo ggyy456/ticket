@@ -22,10 +22,16 @@ import java.util.Set;
  */
 public class RedisJava {
     public static void main(String[] args) {
-//        JedisUtil jedis = JedisUtil.getInstance();
+        JedisUtil jedis = JedisUtil.getInstance();
+
 //        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
-        //System.out.println(jedis.getJedis().save());
+
         test4();
+
+        //jedis.set("data:aaa","adfasdfasdlfjasdlfjasldfasdf");
+        //jedis.expire("data:aaa",100);
+        //System.out.println(jedis.ttl("data:aaa"));
+        //jedis.expire("data:userTicket",10);
 
 //        jedis.del("data:userTicket");
 //        List<String> list = jedis.lrange("data:userTicket", 0, -1);
@@ -234,7 +240,6 @@ public class RedisJava {
 
             for(Ticket t:list){
                 String id = t.getTicketId().toString();
-                jedis.hset("data:ticketList", id , t.getIsSell());
                 jedis.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
             }
 
