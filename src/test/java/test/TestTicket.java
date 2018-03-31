@@ -1,4 +1,4 @@
-package com.mjx.test;
+package test;
 
 import com.mjx.entity.ConstantTicket;
 import com.mjx.entity.Train;

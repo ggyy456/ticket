@@ -1,12 +1,10 @@
-package com.mjx.test;
+package test;
 
-import com.mjx.entity.ConstantTicket;
 import com.mjx.util.ConfigHelper;
 import jxl.Sheet;
 import jxl.Workbook;
 import java.io.File;
 import java.sql.*;
-import java.util.Random;
 
 /**
  * Created by Administrator on 2017-9-14.

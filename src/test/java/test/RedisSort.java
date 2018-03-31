@@ -1,7 +1,6 @@
-package com.mjx.test;
+package test;
 
 import com.mjx.redis.JedisUtil;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.SortingParams;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.mjx.test;
+package test;
 
 import com.alibaba.fastjson.JSON;
 import com.mjx.entity.Ticket;
