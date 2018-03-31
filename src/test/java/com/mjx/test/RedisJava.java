@@ -4,10 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.mjx.entity.Ticket;
 import com.mjx.entity.TrainDTO;
 import com.mjx.redis.JedisUtil;
-import com.mjx.redis.SerializeUtil;
 import com.mjx.util.ConfigHelper;
 import redis.clients.jedis.Jedis;
-
+import redis.clients.jedis.Pipeline;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,16 +16,31 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by Administrator on 2017-12-5.
- */
+/*
+    注：序列化对象时，需要对象也实现Serializable接口
+    正常情况下效率也挺高，但是如果再高并发的情况下，序列化和反序列化消耗太多
+    redis不支持存储object和泛型，是有理由的
+    建议使用json来存储
+
+    Pipeline 对于大批量数据的存储和读取速度极快
+*/
 public class RedisJava {
     public static void main(String[] args) {
         JedisUtil jedis = JedisUtil.getInstance();
-
 //        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
 
-        test4();
+        test2();
+
+//        Set<String> set = jedis.keys( "join:*");
+//        Iterator<String> it = set.iterator();
+//        long num = 0;
+//        while(it.hasNext()){
+//            String keyStr = it.next();
+//            long n = jedis.scard(keyStr);
+//            num += n;
+//        }
+//
+//        System.out.println(num);
 
         //jedis.set("data:aaa","adfasdfasdlfjasdlfjasldfasdf");
         //jedis.expire("data:aaa",100);
@@ -41,8 +55,6 @@ public class RedisJava {
 //
 //        System.out.println(list.size());
 
-
-
     }
 
     public static void batchDel(String pre_str){
@@ -56,67 +68,9 @@ public class RedisJava {
         }
     }
 
-    /*
-        注：序列化对象时，需要对象也实现Serializable接口
-        正常情况下效率也挺高，但是如果再高并发的情况下，序列化和反序列化消耗太多
-        redis不支持存储object和泛型，是有理由的
-        建议使用json来存储
-    */
     public static void test1(){
-        JedisUtil jedis= JedisUtil.getInstance();
-        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
-
-        TrainDTO t1 = new TrainDTO();
-        t1.setTrainNo("1111");
-        t1.setTrainType("1");
-
-        TrainDTO t2 = new TrainDTO();
-        t2.setTrainNo("2222");
-        t2.setTrainType("2");
-
-        List<TrainDTO> list1 = new ArrayList<TrainDTO>();
-        list1.add(t1);
-        list1.add(t2);
-
-        jedis.set("list".getBytes(), SerializeUtil.serialize(list1));
-
-        byte[] bs = jedis.get("list".getBytes());
-        List<TrainDTO> list2 = (List<TrainDTO>)SerializeUtil.unserialize(bs);
-        for(TrainDTO dto : list2){
-            System.out.println("list TrainNo is:" + dto.getTrainNo());
-        }
-
-    }
-
-    /*
-        JSON方式存储list
-     */
-    public static void test2(){
-        JedisUtil jedis= JedisUtil.getInstance();
-        System.out.println("清空库中所有数据："+jedis.getJedis().flushDB());
-
-        TrainDTO t1 = new TrainDTO();
-        t1.setTrainNo("1111");
-        t1.setTrainType("1");
-
-        TrainDTO t2 = new TrainDTO();
-        t2.setTrainNo("2222");
-        t2.setTrainType("2");
-
-        List<TrainDTO> list1 = new ArrayList<TrainDTO>();
-        list1.add(t1);
-        list1.add(t2);
-
-        String jsonList = JSON.toJSONString(list1);
-        jedis.set("jsonList",jsonList);
-
-        List<TrainDTO> list2 = JSON.parseArray(jedis.get("jsonList"),TrainDTO.class);
-        System.out.println(list2.get(1).getTrainNo());
-    }
-
-    public static void test3(){
         Jedis jedis = JedisUtil.getInstance().getJedis();
-        //System.out.println("清空库中所有数据："+jedis.flushDB());
+        Pipeline pipeline = jedis.pipelined();
 
         Connection conn = null;
         Statement stmt = null;
@@ -152,7 +106,6 @@ public class RedisJava {
 
             long startTime=System.currentTimeMillis();
 
-            //JedisUtil.setObject("train",list);
             String t1 = "00:00";
             String t2 = "06:00";
             String t3 = "12:00";
@@ -162,22 +115,22 @@ public class RedisJava {
             for(TrainDTO tr:list){
                 String id = tr.getTrainId().toString();
                 String t = tr.getBeginTime();
-                jedis.hset("data:trainList", id , JSON.toJSONString(tr));
-                jedis.sadd("query:begin:"+tr.getBeginStation() , id);
-                jedis.sadd("query:end:"+tr.getEndStation() , id);
-                jedis.sadd("query:type:"+tr.getTrainType(), id);
+                pipeline.hset("data:trainList", id , JSON.toJSONString(tr));
+                pipeline.sadd("query:begin:"+tr.getBeginStation() , id);
+                pipeline.sadd("query:end:"+tr.getEndStation() , id);
+                pipeline.sadd("query:type:"+tr.getTrainType(), id);
 
                 if(t.compareTo(t1)>=0 && t.compareTo(t2)<=0){
-                    jedis.sadd("query:time1", id);
+                    pipeline.sadd("query:time1", id);
                 }
                 if(t.compareTo(t2)>=0 && t.compareTo(t3)<=0){
-                    jedis.sadd("query:time2", id);
+                    pipeline.sadd("query:time2", id);
                 }
                 if(t.compareTo(t3)>=0 && t.compareTo(t4)<=0){
-                    jedis.sadd("query:time3", id);
+                    pipeline.sadd("query:time3", id);
                 }
                 if(t.compareTo(t4)>=0 && t.compareTo(t5)<=0){
-                    jedis.sadd("query:time4", id);
+                    pipeline.sadd("query:time4", id);
                 }
             }
 
@@ -195,16 +148,17 @@ public class RedisJava {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }finally {
-            jedis.close();
+            jedis.disconnect();
         }
 
     }
 
-    public static void test4(){
+    public static void test2(){
         Jedis jedis= JedisUtil.getInstance().getJedis();
+        Pipeline pipeline = jedis.pipelined();
+
         //清除当前数据
-        //jedis.del("data:ticketList");
-        //batchDel("join:");
+        batchDel("join:");
 
         Connection conn = null;
         Statement stmt = null;
@@ -238,11 +192,17 @@ public class RedisJava {
 
             long startTime=System.currentTimeMillis();
 
+            int num=0;
             for(Ticket t:list){
                 String id = t.getTicketId().toString();
-                jedis.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
-            }
+                //jedis.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
+                pipeline.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
 
+                if(num++ % 1000 == 0){
+                    pipeline.sync();
+                }
+            }
+            pipeline.sync();        //必须使用该方法，不然会丢失数据
             long endTime=System.currentTimeMillis();
             float excTime=(float)(endTime-startTime)/1000;
             System.out.println("执行时间："+excTime+"s");
@@ -257,34 +217,10 @@ public class RedisJava {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }finally {
-            jedis.close();
+            jedis.disconnect();
         }
 
     }
-
-    public static void test5(){
-        long startTime = System.currentTimeMillis();
-
-        JedisUtil jedis= JedisUtil.getInstance();
-        //完成select * from t_train where train_type='G'
-        //Set<String> ids = jedis.smembers("G");
-
-        //完成select * from t_train where begin_station='北京' and end_station='武汉'
-        Set<String> ids = jedis.sinter("始北京","终武汉");  //得到两个id集合的交集
-
-        String[] idArr = ids.toArray(new String[]{});
-        List<String> trainJsonList = jedis.hmget("trainList", idArr);    //从user的hash类型中获取多个filed的value,传入的field可以为字符串数组
-        //jedis.sort()
-        System.out.println(ids);
-        System.out.println(trainJsonList);   //打印出所有的满足条件的user
-
-        long endTime=System.currentTimeMillis();
-        float excTime=(float)(endTime-startTime)/1000;
-        System.out.println("执行时间："+excTime+"s");
-
-
-    }
-
 
 
 }

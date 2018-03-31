@@ -6,10 +6,8 @@ package com.mjx.redis;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.SortingParams;
+
+import redis.clients.jedis.*;
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
 import redis.clients.util.SafeEncoder;
 
@@ -47,6 +45,7 @@ public class JedisUtil {
                 10000,JRedisPoolConfig.REDIS_PASSWORD);    */
 
         //redis未设置了密码：
+        //jedisPool = new JedisPool(config, "192.168.11.162",6379);
         jedisPool = new JedisPool(config, "127.0.0.1",6379);
     }
 
@@ -62,6 +61,13 @@ public class JedisUtil {
         return jedisPool.getResource();
     }
 
+    /**
+     * 获取获取管道对象
+     * @return
+     */
+    public Pipeline getPipeline() {
+        return getJedis().pipelined();
+    }
 
     private static final JedisUtil jedisUtil = new JedisUtil();
 

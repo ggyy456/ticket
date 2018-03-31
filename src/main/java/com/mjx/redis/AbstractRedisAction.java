@@ -9,6 +9,7 @@ import com.opensymphony.xwork2.ModelDriven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
 import java.util.*;
 
@@ -52,7 +53,10 @@ public class AbstractRedisAction extends ActionSupport implements ModelDriven {
             condition.add(beginTime);
         }
 
-        JedisUtil jedis= JedisUtil.getInstance();
+        long startTime = System.currentTimeMillis();
+
+        Jedis jedis = JedisUtil.getInstance().getJedis();
+
         Set<String> ids = new HashSet<String>();
         Set<String> stationIds = jedis.sinter(condition.toArray(new String[]{}));  //得到两个id集合的交集
         ids.addAll(stationIds);
@@ -90,6 +94,12 @@ public class AbstractRedisAction extends ActionSupport implements ModelDriven {
                 trainList.add(dto);
             }
         }
+
+        long endTime=System.currentTimeMillis();
+        float excTime=(float)(endTime-startTime)/1000;
+        System.out.println("执行时间："+excTime+"s");
+
+        jedis.disconnect();
 
         paging.setSizePerPage(100);
         paging.setTotalSize(trainList.size());
