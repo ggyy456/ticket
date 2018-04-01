@@ -27,7 +27,7 @@
               xaProperties.portNumber="3306"
               xaProperties.user="root"
               xaProperties.password="root"
-              xaProperties.url="jdbc:mysql://localhost:3306/ticket"
+              xaProperties.url="jdbc:mysql://localhost:3306/ticket?useServerPrepStmts=false&amp;rewriteBatchedStatements=true"
     />
 
     <!--  db2连接

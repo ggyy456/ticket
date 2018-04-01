@@ -1,14 +1,18 @@
 package com.mjx.ibatis;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapExecutor;
 import com.ibatis.sqlmap.engine.execution.SqlExecutor;
 import com.ibatis.sqlmap.engine.impl.SqlMapClientImpl;
 import com.mjx.util.ReflectUtil;
+import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -180,6 +184,37 @@ public class AbstractIBatisDAO<T> extends SqlMapClientDaoSupport implements IDAO
 
     public void setSqlExecutor(SqlExecutor sqlExecutor) {
         this.sqlExecutor = sqlExecutor;
+    }
+
+    public int handleBatch(final BatchInfo batchInfo) throws RuntimeException {
+        try {
+            this.getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
+                public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
+                    executor.startBatch();
+                    Iterator var3 = batchInfo.getBatchItemList().iterator();
+
+                    while(var3.hasNext()) {
+                        BatchItem bi = (BatchItem)var3.next();
+                        switch(batchInfo.getType()) {
+                            case 1:
+                                executor.insert(bi.getStatement(), bi.getObj());
+                                break;
+                            case 2:
+                                executor.update(bi.getStatement(), bi.getObj());
+                                break;
+                            default:
+                                executor.delete(bi.getStatement(), bi.getObj());
+                        }
+                    }
+
+                    executor.executeBatch();
+                    return null;
+                }
+            });
+            return 0;
+        } catch (Throwable var3) {
+            throw new RuntimeException("批量处理错误");
+        }
     }
 
 }

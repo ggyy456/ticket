@@ -20,4 +20,5 @@
     <import resource="context-aop.xml"/>
     <import resource="context-user.xml"/>
     <import resource="context-train.xml"/>
+    <import resource="context-quartz.xml"/>
 </beans>

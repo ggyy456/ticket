@@ -25,4 +25,6 @@ public interface IDAO<T> {
     Object execute(Object... obj) throws RuntimeException;
 
     IPaging<T> getPage(IPaging<T> var1) throws RuntimeException;
+
+    int handleBatch(BatchInfo var1) throws RuntimeException;
 }

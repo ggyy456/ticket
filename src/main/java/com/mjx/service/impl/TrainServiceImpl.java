@@ -48,7 +48,7 @@ public class TrainServiceImpl implements TrainService {
             LOGGER.info(userId+"参加抢票");
 
             String beginStation = "query:begin:北京";
-            String endStation = "query:end:天津";
+            String endStation = "query:end:上海";
             String trainType = "query:type:G";
             String ticketType = "二等座";
 
@@ -64,6 +64,8 @@ public class TrainServiceImpl implements TrainService {
                     String ticketId = ticketIt.next();
                     if(!jedis.hexists("data:userTicket",ticketId)){
                         jedis.hset("data:userTicket",ticketId,userId+"");
+                        jedis.expire("data:userTicket",650);    //设置过期时间
+
                         jedis.srem("join:"+trainId+ticketType,ticketId);
                         LOGGER.info("恭喜"+userId+"抢到票"+ticketId);
                         break outer;
