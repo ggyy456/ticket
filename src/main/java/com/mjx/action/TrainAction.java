@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- ab -n 5000 -c 1000 -k http://localhost:8081/ticket/train/concurrencyTest.do
+ ab -n 10000 -c 5000 -k http://localhost:8081/ticket/train/concurrencyTest.do
 
  */
 

@@ -27,6 +27,7 @@ public class RedisToDatabaseJob {
         this.trainDAO = trainDAO;
     }
 
+    //批量更新效率太低，有待提高
     protected void run()  {
         long startTime=System.currentTimeMillis();
 
@@ -34,7 +35,8 @@ public class RedisToDatabaseJob {
         long second = jedis.ttl("data:userTicket");
 
         if(second <= 600){
-            BatchInfo batchInfo = new BatchInfo(BatchInfo.INSERT);
+            BatchInfo batchInsert = new BatchInfo(BatchInfo.INSERT);
+            BatchInfo batchUpdate = new BatchInfo(BatchInfo.UPDATE);
             TrainDTO dto = null;
 
             Set<String> keySet = jedis.hkeys("data:userTicket");
@@ -45,10 +47,13 @@ public class RedisToDatabaseJob {
                 String userId = jedis.hget("data:userTicket",ticketId);
                 dto.setTicketId(Integer.valueOf(ticketId));
                 dto.setUserId(Integer.valueOf(userId));
-                batchInfo.addBatch("Train.saveUserTicket", dto);
+                dto.setIsSell("1");
+                batchInsert.addBatch("Train.saveUserTicket", dto);
+                batchUpdate.addBatch("Train.updateTicket",dto);
             }
 
-            trainDAO.handleBatch(batchInfo);
+            trainDAO.handleBatch(batchInsert);
+            trainDAO.handleBatch(batchUpdate);
             jedis.del("data:userTicket");
         }
 

@@ -96,7 +96,7 @@
 
     <statement id="updateTicket" parameterClass="train">
         <![CDATA[
-			update T_TICKET set IS_SELL='1'
+			update T_TICKET set IS_SELL=#isSell:VARCHAR#
 			where TICKET_ID=#ticketId:INTEGER#
 		]]>
     </statement>
