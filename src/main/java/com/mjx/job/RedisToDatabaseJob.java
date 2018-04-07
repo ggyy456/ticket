@@ -41,15 +41,25 @@ public class RedisToDatabaseJob {
 
             Set<String> keySet = jedis.hkeys("data:userTicket");
             Iterator<String> keyIt = keySet.iterator();
+            String ids = "";
+            int num = 0;
             while(keyIt.hasNext()){
                 dto = new TrainDTO();
                 String ticketId = keyIt.next();
                 String userId = jedis.hget("data:userTicket",ticketId);
                 dto.setTicketId(Integer.valueOf(ticketId));
                 dto.setUserId(Integer.valueOf(userId));
-                dto.setIsSell("1");
                 batchInsert.addBatch("Train.saveUserTicket", dto);
-                batchUpdate.addBatch("Train.updateTicket",dto);
+
+                ids += ","+ticketId;
+                if(++num % 1000 == 0) {
+                    batchUpdate.addBatch("Train.updateTicket", ids.substring(1));
+                    ids = "";
+                }
+            }
+
+            if(!"".equals(ids)){
+                batchUpdate.addBatch("Train.updateTicket", ids.substring(1));
             }
 
             trainDAO.handleBatch(batchInsert);

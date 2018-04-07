@@ -94,10 +94,9 @@
 		]]>
     </statement>
 
-    <statement id="updateTicket" parameterClass="train">
+    <statement id="updateTicket" parameterClass="string">
         <![CDATA[
-			update T_TICKET set IS_SELL=#isSell:VARCHAR#
-			where TICKET_ID=#ticketId:INTEGER#
+            update t_ticket set is_sell='1' where ticket_id in ($ids$)
 		]]>
     </statement>
 

@@ -50,34 +50,21 @@ public class TrainServiceImpl implements TrainService {
 
             String trainTypeStr = ConstantTicket.TRAIN_TYPE[rd.nextInt(6)];
             String beginStation = "query:begin:北京";
-            String endStation = "query:end:上海";
+            String endStation = "query:end:成都";
             String trainType = "query:type:"+trainTypeStr;
-            String ticketType = "";
-            if(ConstantTicket.TRAIN_TYPE_G.equals(trainTypeStr)){
-                ticketType = ConstantTicket.TICKET_TYPE_G[rd.nextInt(3)];
-            }
-            else if(ConstantTicket.TRAIN_TYPE_C.equals(trainTypeStr)){
-                ticketType = ConstantTicket.TICKET_TYPE_C[rd.nextInt(3)];
-            }
-            else if(ConstantTicket.TRAIN_TYPE_D.equals(trainTypeStr)){
-                ticketType = ConstantTicket.TICKET_TYPE_D[rd.nextInt(3)];
-            }
-            else if(ConstantTicket.TRAIN_TYPE_Z.equals(trainTypeStr)){
-                ticketType = ConstantTicket.TICKET_TYPE_Z[rd.nextInt(2)];
-            }
-            else if(ConstantTicket.TRAIN_TYPE_T.equals(trainTypeStr)){
-                ticketType = ConstantTicket.TICKET_TYPE_T[rd.nextInt(5)];
-            }
-            else if(ConstantTicket.TRAIN_TYPE_K.equals(trainTypeStr)){
-                ticketType = ConstantTicket.TICKET_TYPE_K[rd.nextInt(5)];
-            }
+            String ticketType = randomTicketType(trainTypeStr,rd);
 
             Set<String> trainIds = jedis.sinter(beginStation,endStation,trainType);  //得到id交集
             Iterator<String> trainIt = trainIds.iterator();
+            int num = 0;
 
             outer:while(trainIt.hasNext()){
                 String trainId = trainIt.next();
                 Set<String> ticketIds = jedis.smembers("join:"+trainId+ticketType);
+                while(ticketIds.isEmpty() && ++num<4){
+                    ticketType = randomTicketType(trainTypeStr,rd);
+                    ticketIds = jedis.smembers("join:"+trainId+ticketType);
+                }
                 Iterator<String> ticketIt = ticketIds.iterator();
 
                 while (ticketIt.hasNext()){
@@ -97,7 +84,31 @@ public class TrainServiceImpl implements TrainService {
             lock.unlock();
         }
 
+    }
 
+    private String randomTicketType(String trainTypeStr,Random rd){
+        String ticketType = "";
+
+        if(ConstantTicket.TRAIN_TYPE_G.equals(trainTypeStr)){
+            ticketType = ConstantTicket.TICKET_TYPE_G[rd.nextInt(3)];
+        }
+        else if(ConstantTicket.TRAIN_TYPE_C.equals(trainTypeStr)){
+            ticketType = ConstantTicket.TICKET_TYPE_C[rd.nextInt(3)];
+        }
+        else if(ConstantTicket.TRAIN_TYPE_D.equals(trainTypeStr)){
+            ticketType = ConstantTicket.TICKET_TYPE_D[rd.nextInt(3)];
+        }
+        else if(ConstantTicket.TRAIN_TYPE_Z.equals(trainTypeStr)){
+            ticketType = ConstantTicket.TICKET_TYPE_Z[rd.nextInt(2)];
+        }
+        else if(ConstantTicket.TRAIN_TYPE_T.equals(trainTypeStr)){
+            ticketType = ConstantTicket.TICKET_TYPE_T[rd.nextInt(5)];
+        }
+        else if(ConstantTicket.TRAIN_TYPE_K.equals(trainTypeStr)){
+            ticketType = ConstantTicket.TICKET_TYPE_K[rd.nextInt(5)];
+        }
+
+        return ticketType;
     }
 
 }
