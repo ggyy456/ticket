@@ -17,4 +17,13 @@ public class UUIDGenerator {
         // d 代表参数为正数型
         return machineId + String.format("%015d", hashCodeV);
     }
+
+    public static String getUUID32(){
+        return  java.util.UUID.randomUUID().toString().replaceAll("\\-", "");
+    }
+
+
+    public static void main(String[] args){
+        System.out.println(UUIDGenerator.getUUID32());
+    }
 }
