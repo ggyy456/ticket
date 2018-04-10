@@ -5,9 +5,10 @@
 <struts>
 
     <package name="default" namespace="/" extends="json-default" >
-        <action name="login" method="login" class="userAction">
-            <result name="success">/WEB-INF/view/index.jsp</result>
-            <result name="login">/WEB-INF/view/hello.jsp</result>
+        <action name="polling" method="polling" class="userAction">
+            <result type="json" >
+                <param name="root">model</param>
+            </result>
         </action>
 
         <action name="hello" method="hello" class="userAction">
