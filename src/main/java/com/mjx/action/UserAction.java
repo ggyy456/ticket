@@ -58,35 +58,32 @@ public class UserAction extends ActionSupport {
             request.setCharacterEncoding("UTF-8");
             response.setContentType("text/html;charset=utf-8");
 
+            long startTime=System.currentTimeMillis();
             int num=0;
-            boolean flag = true;// 用来表示长连接是否已经被断开（如果数据发送失败了就说明是断开了）
-            for(int i=0;i<100000;i++){
-                flag = this.sendData("jsFun", (num++)+"", response);
-                if (!flag) {// 如果数据发送失败，那么就退出了，说明页面长连接已经断开了
-                    break;
-                }
+            for(int i=0;i<10000000;i++){
+                /* 这句话比较重要，我们通过response给页面返回一个js脚本，让js执行父页面的对应的jsFun，参数就是我们的data */
+                //response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "数据"+(num++) + "\")</script>");
+                //response.flushBuffer();
+                response.getWriter().write("数据"+(num++));
+                response.resetBuffer();
+
+                TimeUnit.SECONDS.sleep( 1 );
             }
+
+
+            long endTime=System.currentTimeMillis();
+            float excTime=(float)(endTime-startTime)/1000;
+            //response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "执行时间："+excTime + "s\")</script>");
+            //response.flushBuffer();
+            response.getWriter().write("success");
+            LOGGER.info("success:执行时间："+excTime + "s");
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+        }catch (Exception e) {
+            System.err.println("long connection was broken!");
         }
         return null;
-    }
-
-    private boolean sendData(String jsFun, String data, HttpServletResponse response) {
-        try {
-            response.setContentType("text/html;charset=utf-8");
-            /* 这句话比较重要，我们通过response给页面返回一个js脚本，让js执行父页面的对应的jsFun，参数就是我们的data */
-            response.getWriter().write(
-                    "<script type=\"text/javascript\">parent." + jsFun + "(\""
-                            + data + "\")</script>");
-            response.flushBuffer();
-            return true;
-        } catch (Exception e) {
-            System.err.println("long connection was broken!");
-            return false;
-        }
-
     }
 
     public String hello() {
