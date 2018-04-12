@@ -15,6 +15,7 @@
 
     <bean id="userAction" class="com.mjx.action.UserAction" scope="prototype">
         <property name="userService" ref="userService" />
+        <property name="redisService" ref="redisService" />
     </bean>
 
     <bean id="userService" class="com.mjx.service.impl.UserServiceImpl">
@@ -30,5 +31,9 @@
         <property name="idao" ref="userDAO"/>
     </bean>
 
+    <bean id="redisService" class="com.mjx.service.impl.RedisServiceImpl">
+        <property name="redisTemplate" ref="redisTemplate" />
+        <property name="trainDAO" ref="trainDAO" />
+    </bean>
 
 </beans>

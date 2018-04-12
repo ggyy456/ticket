@@ -1,6 +1,7 @@
 package com.mjx.action;
 
 import com.mjx.entity.User;
+import com.mjx.service.RedisService;
 import com.mjx.service.UserService;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.ServletActionContext;
@@ -40,6 +41,8 @@ public class UserAction extends ActionSupport {
 
     private UserService userService;
 
+    private RedisService redisService;
+
     private List<User> list;
 
     private static final long serialVersionUID = 1L;
@@ -51,38 +54,7 @@ public class UserAction extends ActionSupport {
     }
 
     public String polling() {
-        try {
-            LOGGER.info("进入polling");
-            HttpServletRequest request = ServletActionContext.getRequest();
-            HttpServletResponse response = ServletActionContext.getResponse();
-            request.setCharacterEncoding("UTF-8");
-            response.setContentType("text/html;charset=utf-8");
-
-            long startTime=System.currentTimeMillis();
-            int num=0;
-            for(int i=0;i<10000000;i++){
-                /* 这句话比较重要，我们通过response给页面返回一个js脚本，让js执行父页面的对应的jsFun，参数就是我们的data */
-                //response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "数据"+(num++) + "\")</script>");
-                //response.flushBuffer();
-                response.getWriter().write("数据"+(num++));
-                response.resetBuffer();
-
-                TimeUnit.SECONDS.sleep( 1 );
-            }
-
-
-            long endTime=System.currentTimeMillis();
-            float excTime=(float)(endTime-startTime)/1000;
-            //response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "执行时间："+excTime + "s\")</script>");
-            //response.flushBuffer();
-            response.getWriter().write("success");
-            LOGGER.info("success:执行时间："+excTime + "s");
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }catch (Exception e) {
-            System.err.println("long connection was broken!");
-        }
+        redisService.trainToRedis();
         return null;
     }
 
@@ -107,6 +79,10 @@ public class UserAction extends ActionSupport {
 
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    public void setRedisService(RedisService redisService) {
+        this.redisService = redisService;
     }
 
     public List<User> getList() {

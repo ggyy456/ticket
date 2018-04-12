@@ -12,6 +12,7 @@
             <list>
                 <value>classpath:config/database.properties</value>
                 <value>classpath:config/dialect.properties</value>
+                <value>classpath:config/redis.properties</value>
             </list>
         </property>
     </bean>
@@ -20,5 +21,7 @@
     <import resource="context-aop.xml"/>
     <import resource="context-user.xml"/>
     <import resource="context-train.xml"/>
+    <import resource="context-redis.xml"/>
+
     <import resource="context-quartz.xml"/>
 </beans>

@@ -32,12 +32,15 @@
 
     <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
     <bean id="valueSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+
+    <!--
     <bean id="jsonSerializer" class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+    -->
 
     <!-- redis模板配置  spring-data-redis提供了一个基础的泛型RedisTemplate封装了基础的crud操作-->
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
         <property name="connectionFactory" ref="connectionFactory"/>
-        <property name="defaultSerializer" ref="jsonSerializer"/>
+        <property name="defaultSerializer" ref="stringRedisSerializer"/>
         <property name="keySerializer" ref="stringRedisSerializer"/>
         <property name="valueSerializer" ref="valueSerializer"/>
     </bean>

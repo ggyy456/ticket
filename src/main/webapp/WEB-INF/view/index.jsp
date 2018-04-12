@@ -26,22 +26,6 @@
             $('#myForm').submit();
         }
 
-        function longPolling() {
-            $.ajax({
-                url: "${pageContext.request.contextPath}/ticket/polling.do",
-                dataType: "text",
-                timeout: 50000,
-                success: function (data) {
-                    $('#container').html(data);
-                    if (data == "success") { // 请求成功
-                        //longPolling();
-                    }
-                    else{
-                        longPolling();
-                    }
-                }
-            });
-        }
     </script>
 
 </head>
@@ -50,7 +34,7 @@
 <form action="" method="post" id="myForm" target="myiframe"></form>
 <!-- iframe要隐藏哦 -->
 <iframe id="myiframe" name="myiframe" style="display: none;"></iframe>
-<input type="button" class="btn" value="开始" onclick="longPolling();"/>
+<input type="button" class="btn" value="开始" onclick="init();"/>
 <div id="container" style="height: 800px"></div>
 </body>
 </html>
