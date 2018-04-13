@@ -40,8 +40,8 @@ public class RedisServiceImpl implements RedisService {
             LOGGER.info("进入polling");
             HttpServletRequest request = ServletActionContext.getRequest();
             HttpServletResponse response = ServletActionContext.getResponse();
-//            request.setCharacterEncoding("UTF-8");
-//            response.setContentType("text/html;charset=utf-8");
+            request.setCharacterEncoding("UTF-8");
+            response.setContentType("text/html;charset=utf-8");
             redisTemplate.opsForValue().set("aaaaaaaa","bbbbbbbbbbbbbb");
             long startTime=System.currentTimeMillis();
             int num=0;
