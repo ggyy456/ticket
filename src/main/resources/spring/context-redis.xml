@@ -39,8 +39,12 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="defaultSerializer" ref="jsonSerializer"/>
+
         <property name="keySerializer" ref="stringRedisSerializer"/>
-        <property name="valueSerializer" ref="jsonSerializer"/>
+        <property name="valueSerializer" ref="stringRedisSerializer"/>
+
+        <property name="hashKeySerializer" ref="stringRedisSerializer"/>
+        <property name="hashValueSerializer" ref="jsonSerializer"/>
     </bean>
 
 
