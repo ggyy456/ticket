@@ -45,7 +45,7 @@ public class RedisServiceImpl implements RedisService {
             redisTemplate.opsForValue().set("aaaaaaaa","bbbbbbbbbbbbbb");
             long startTime=System.currentTimeMillis();
             int num=0;
-            for(int i=0;i<100000;i++){
+            for(int i=0;i<1000000;i++){
                 /* 这句话比较重要，我们通过response给页面返回一个js脚本，让js执行父页面的对应的jsFun，参数就是我们的data */
                 if(i%100==0) {
                     response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "数据" + (num++) + "\")</script>");
