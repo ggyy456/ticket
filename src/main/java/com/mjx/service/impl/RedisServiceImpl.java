@@ -63,28 +63,29 @@ public class RedisServiceImpl implements RedisService {
                     int num=0;
                     for (TrainDTO dto:trainList) {
                         String id = dto.getTrainId().toString();
+                        byte[] byteId = stringSerializer.serialize(id);
                         String t = dto.getBeginTime();
-                        connection.hSet(stringSerializer.serialize("data:trainList"), stringSerializer.serialize(id), jsonSerializer.serialize(dto));
-                        connection.sAdd(stringSerializer.serialize("query:begin:"+dto.getBeginStation()) , stringSerializer.serialize(id));
-                        connection.sAdd(stringSerializer.serialize("query:end:"+dto.getEndStation()) , stringSerializer.serialize(id));
-                        connection.sAdd(stringSerializer.serialize("query:type:"+dto.getTrainType()), stringSerializer.serialize(id));
+                        connection.hSet(stringSerializer.serialize("data:trainList"), byteId, jsonSerializer.serialize(dto));
+                        connection.sAdd(stringSerializer.serialize("query:begin:"+dto.getBeginStation()) , byteId);
+                        connection.sAdd(stringSerializer.serialize("query:end:"+dto.getEndStation()) , byteId);
+                        connection.sAdd(stringSerializer.serialize("query:type:"+dto.getTrainType()), byteId);
 
                         if(t.compareTo(t1)>=0 && t.compareTo(t2)<=0){
-                            connection.sAdd(stringSerializer.serialize("query:time1"), stringSerializer.serialize(id));
+                            connection.sAdd(stringSerializer.serialize("query:time1"), byteId);
                         }
                         if(t.compareTo(t2)>=0 && t.compareTo(t3)<=0){
-                            connection.sAdd(stringSerializer.serialize("query:time2"), stringSerializer.serialize(id));
+                            connection.sAdd(stringSerializer.serialize("query:time2"), byteId);
                         }
                         if(t.compareTo(t3)>=0 && t.compareTo(t4)<=0){
-                            connection.sAdd(stringSerializer.serialize("query:time3"), stringSerializer.serialize(id));
+                            connection.sAdd(stringSerializer.serialize("query:time3"), byteId);
                         }
                         if(t.compareTo(t4)>=0 && t.compareTo(t5)<=0){
-                            connection.sAdd(stringSerializer.serialize("query:time4"), stringSerializer.serialize(id));
+                            connection.sAdd(stringSerializer.serialize("query:time4"), byteId);
                         }
 
                         if((num++)%100==0) {
                             try {
-                                response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "数据" + (num++) + "\")</script>");
+                                response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + dto.getBeginStation()+"—" + dto.getEndStation() + "\")</script>");
                                 response.flushBuffer();
                             }
                             catch (Exception e) {
