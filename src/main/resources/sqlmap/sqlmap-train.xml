@@ -3,6 +3,7 @@
 
 <sqlMap namespace="Train">
     <typeAlias alias="train" type="com.mjx.entity.TrainDTO" />
+    <typeAlias alias="ticket" type="com.mjx.entity.Ticket" />
 
     <sql id="wheresql" >
         <dynamic prepend="where">
@@ -100,6 +101,14 @@
 		]]>
     </statement>
 
+    <statement id="getListTrain" resultClass="train">
+        select  TRAIN_ID as trainId, TRAIN_NO as trainNo ,TRAIN_TYPE as trainType ,BEGIN_STATION as beginStation ,END_STATION as endStation ,BEGIN_TIME as beginTime ,END_TIME as endTime ,TAKE_TIME as takeTime From T_TRAIN
+    </statement>
 
+    <statement id="getListTicket" parameterClass="string" resultClass="ticket">
+        SELECT t1.TICKET_ID as ticketId , t1.TRAIN_ID as trainId  ,t1.TICKET_TYPE as ticketType ,t1.IS_SELL as isSell  from t_ticket t1
+        join t_train t2 on t1.train_id=t2.train_id
+        where t2.begin_station = #value#
+    </statement>
 
 </sqlMap>

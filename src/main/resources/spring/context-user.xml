@@ -32,7 +32,6 @@
     </bean>
 
     <bean id="redisService" class="com.mjx.service.impl.RedisServiceImpl">
-        <property name="redisTemplate" ref="redisTemplate" />
         <property name="trainDAO" ref="trainDAO" />
     </bean>
 

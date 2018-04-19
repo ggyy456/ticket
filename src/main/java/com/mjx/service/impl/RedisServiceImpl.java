@@ -1,17 +1,25 @@
 package com.mjx.service.impl;
 
 import com.mjx.entity.Train;
+import com.mjx.entity.TrainDTO;
 import com.mjx.entity.User;
 import com.mjx.ibatis.IDAO;
+import com.mjx.redis.RedisUtil;
 import com.mjx.service.RedisService;
 import com.mjx.service.UserService;
+import com.mjx.util.ContextUtil;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -23,12 +31,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class RedisServiceImpl implements RedisService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisServiceImpl.class);
-    private RedisTemplate redisTemplate;
     private IDAO<Train> trainDAO;
-
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public void setTrainDAO(IDAO<Train> trainDAO) {
         this.trainDAO = trainDAO;
@@ -38,20 +41,60 @@ public class RedisServiceImpl implements RedisService {
     public void trainToRedis() {
         try {
             LOGGER.info("进入polling");
+            RedisUtil redisUtil = (RedisUtil)ContextUtil.get("redisUtil");
             HttpServletRequest request = ServletActionContext.getRequest();
-            HttpServletResponse response = ServletActionContext.getResponse();
+            final HttpServletResponse response = ServletActionContext.getResponse();
             request.setCharacterEncoding("UTF-8");
             response.setContentType("text/html;charset=utf-8");
-            redisTemplate.opsForValue().set("aaaaaaaa","bbbbbbbbbbbbbb");
+
+            final String t1 = "00:00";
+            final String t2 = "06:00";
+            final String t3 = "12:00";
+            final String t4 = "18:00";
+            final String t5 = "24:00";
+            final List<TrainDTO> trainList = (List<TrainDTO>)trainDAO.execute("getListTrain");
+            final RedisSerializer<String> stringSerializer = redisUtil.getStringSerializer();
+            final RedisSerializer<Object> jsonSerializer = redisUtil.getJsonSerializer();
+
             long startTime=System.currentTimeMillis();
-            int num=0;
-            for(int i=0;i<1000000;i++){
-                /* 这句话比较重要，我们通过response给页面返回一个js脚本，让js执行父页面的对应的jsFun，参数就是我们的data */
-                if(i%100==0) {
-                    response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "数据" + (num++) + "\")</script>");
-                    response.flushBuffer();
+            redisUtil.executePipelined(new RedisCallback<List<Object>>() {
+                @Override
+                public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
+                    int num=0;
+                    for (TrainDTO dto:trainList) {
+                        String id = dto.getTrainId().toString();
+                        String t = dto.getBeginTime();
+                        connection.hSet(stringSerializer.serialize("data:trainList"), stringSerializer.serialize(id), jsonSerializer.serialize(dto));
+                        connection.sAdd(stringSerializer.serialize("query:begin:"+dto.getBeginStation()) , stringSerializer.serialize(id));
+                        connection.sAdd(stringSerializer.serialize("query:end:"+dto.getEndStation()) , stringSerializer.serialize(id));
+                        connection.sAdd(stringSerializer.serialize("query:type:"+dto.getTrainType()), stringSerializer.serialize(id));
+
+                        if(t.compareTo(t1)>=0 && t.compareTo(t2)<=0){
+                            connection.sAdd(stringSerializer.serialize("query:time1"), stringSerializer.serialize(id));
+                        }
+                        if(t.compareTo(t2)>=0 && t.compareTo(t3)<=0){
+                            connection.sAdd(stringSerializer.serialize("query:time2"), stringSerializer.serialize(id));
+                        }
+                        if(t.compareTo(t3)>=0 && t.compareTo(t4)<=0){
+                            connection.sAdd(stringSerializer.serialize("query:time3"), stringSerializer.serialize(id));
+                        }
+                        if(t.compareTo(t4)>=0 && t.compareTo(t5)<=0){
+                            connection.sAdd(stringSerializer.serialize("query:time4"), stringSerializer.serialize(id));
+                        }
+
+                        if((num++)%100==0) {
+                            try {
+                                response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "数据" + (num++) + "\")</script>");
+                                response.flushBuffer();
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    return null;
                 }
-            }
+            });
 
             long endTime=System.currentTimeMillis();
             float excTime=(float)(endTime-startTime)/1000;

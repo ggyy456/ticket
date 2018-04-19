@@ -88,6 +88,7 @@
         </property>
     </bean>-->
 
-    <!-- 事物管理 -->
+    <!-- context通用 -->
+    <bean id="contextUtil" class="com.mjx.util.ContextUtil" lazy-init="false"/>
 
 </beans>
