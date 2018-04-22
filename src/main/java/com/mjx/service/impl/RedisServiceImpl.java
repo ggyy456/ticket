@@ -1,5 +1,6 @@
 package com.mjx.service.impl;
 
+import com.mjx.entity.Ticket;
 import com.mjx.entity.Train;
 import com.mjx.entity.TrainDTO;
 import com.mjx.entity.User;
@@ -38,14 +39,10 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void trainToRedis() {
+    public void trainToRedis(final HttpServletResponse response) {
         try {
-            LOGGER.info("进入polling");
+            LOGGER.info("进入trainToRedis");
             RedisUtil redisUtil = (RedisUtil)ContextUtil.get("redisUtil");
-            HttpServletRequest request = ServletActionContext.getRequest();
-            final HttpServletResponse response = ServletActionContext.getResponse();
-            request.setCharacterEncoding("UTF-8");
-            response.setContentType("text/html;charset=utf-8");
 
             final String t1 = "00:00";
             final String t2 = "06:00";
@@ -110,7 +107,47 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void ticketToRedis() {
+    public void ticketToRedis(final HttpServletResponse response) {
+        try {
+            LOGGER.info("进入ticketToRedis");
+            RedisUtil redisUtil = (RedisUtil)ContextUtil.get("redisUtil");
 
+            final List<Ticket> ticketList = (List<Ticket>)trainDAO.execute("getListTicket","北京");
+            final RedisSerializer<String> stringSerializer = redisUtil.getStringSerializer();
+
+            long startTime=System.currentTimeMillis();
+            redisUtil.executePipelined(new RedisCallback<List<Object>>() {
+                @Override
+                public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {
+                    int num=0;
+                    for (Ticket t:ticketList) {
+                        String id = t.getTicketId().toString();
+                        byte[] byteId = stringSerializer.serialize(id);
+                        connection.sAdd(stringSerializer.serialize("join:"+t.getTrainId()+t.getTicketType()) , byteId);
+
+                        if((num++)%50000==0) {
+                            try {
+                                response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + t.getTrainId()+"—" + t.getTicketType() + "\")</script>");
+                                response.flushBuffer();
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    return null;
+                }
+            });
+
+            long endTime=System.currentTimeMillis();
+            float excTime=(float)(endTime-startTime)/1000;
+            response.getWriter().write("<script type=\"text/javascript\">parent.jsFun(\"" + "执行时间："+excTime + "s\")</script>");
+            response.flushBuffer();
+            LOGGER.info("执行时间："+excTime + "s");
+
+        } catch (Exception e) {
+            System.err.println("long connection was broken!");
+            e.printStackTrace();
+        }
     }
 }

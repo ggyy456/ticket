@@ -6,11 +6,14 @@ import com.mjx.entity.TrainDTO;
 import com.mjx.entity.User;
 import com.mjx.ibatis.IDAO;
 import com.mjx.redis.JedisUtil;
+import com.mjx.redis.RedisUtil;
 import com.mjx.service.TrainService;
 import com.mjx.service.UserService;
 import com.mjx.util.ConfigHelper;
+import com.mjx.util.ContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import redis.clients.jedis.Jedis;
 
 import javax.swing.text.html.HTMLDocument;
@@ -40,7 +43,9 @@ public class TrainServiceImpl implements TrainService {
 
     //lock比synchronized 效率稍高，并发访问时
     public void concurrencyTest(){
-        Jedis jedis= JedisUtil.getInstance().getJedis();
+        RedisUtil redisUtil = (RedisUtil) ContextUtil.get("redisUtil");
+        final RedisSerializer<String> stringSerializer = redisUtil.getStringSerializer();
+
         lock.lock();
         try {
             Random rd = new Random();
@@ -54,33 +59,30 @@ public class TrainServiceImpl implements TrainService {
             String trainType = "query:type:"+trainTypeStr;
             String ticketType = randomTicketType(trainTypeStr,rd);
 
-            Set<String> trainIds = jedis.sinter(beginStation,endStation,trainType);  //得到id交集
-            Iterator<String> trainIt = trainIds.iterator();
+            Set<Object> trainIds = redisUtil.sinter(beginStation,Arrays.asList(endStation,trainType));  //得到id交集
+            Iterator<Object> trainIt = trainIds.iterator();
             int num = 0;
 
             outer:while(trainIt.hasNext()){
-                String trainId = trainIt.next();
-                Set<String> ticketIds = jedis.smembers("join:"+trainId+ticketType);
+                String trainId = (String)trainIt.next();
+                Set<Object> ticketIds = redisUtil.sGet("join:"+trainId+ticketType);
                 while(ticketIds.isEmpty() && ++num<4){
                     ticketType = randomTicketType(trainTypeStr,rd);
-                    ticketIds = jedis.smembers("join:"+trainId+ticketType);
+                    ticketIds = redisUtil.sGet("join:"+trainId+ticketType);
                 }
-                Iterator<String> ticketIt = ticketIds.iterator();
+                Iterator<Object> ticketIt = ticketIds.iterator();
 
                 while (ticketIt.hasNext()){
-                    String ticketId = ticketIt.next();
-                    if(!jedis.hexists("data:userTicket",ticketId)){
-                        jedis.hset("data:userTicket",ticketId,userId+"");
-                        jedis.expire("data:userTicket",650);    //设置过期时间
-
-                        jedis.srem("join:"+trainId+ticketType,ticketId);
+                    String ticketId = (String)ticketIt.next();
+                    if(!redisUtil.hHasKey("data:userTicket",ticketId)){
+                        redisUtil.hset("data:userTicket",ticketId,userId,650);  //设置过期时间
+                        redisUtil.setRemove("join:"+trainId+ticketType,ticketId);
                         LOGGER.info("恭喜"+userId+"抢到票"+ticketId);
                         break outer;
                     }
                 }
             }
         }finally {
-            jedis.close();
             lock.unlock();
         }
 

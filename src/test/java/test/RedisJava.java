@@ -197,10 +197,6 @@ public class RedisJava {
                 String id = t.getTicketId().toString();
                 //jedis.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
                 pipeline.sadd("join:"+t.getTrainId()+t.getTicketType() , id);
-
-                if(num++ % 1000 == 0){
-                    pipeline.sync();
-                }
             }
             pipeline.sync();        //必须使用该方法，不然会丢失数据
             long endTime=System.currentTimeMillis();

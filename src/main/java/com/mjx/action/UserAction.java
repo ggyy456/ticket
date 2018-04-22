@@ -49,12 +49,29 @@ public class UserAction extends ActionSupport {
 
     private String city;
 
+    private String type;
+
     public String execute(){
         return SUCCESS;
     }
 
     public String polling() {
-        redisService.trainToRedis();
+        try {
+            HttpServletRequest request = ServletActionContext.getRequest();
+            final HttpServletResponse response = ServletActionContext.getResponse();
+            request.setCharacterEncoding("UTF-8");
+            response.setContentType("text/html;charset=utf-8");
+
+            if("train".equals(type)) {
+                redisService.trainToRedis(response);
+            }
+            else if("ticket".equals(type)) {
+                redisService.ticketToRedis(response);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -67,6 +84,14 @@ public class UserAction extends ActionSupport {
         list = userService.getUserList(city);
 
         return SUCCESS;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getCity() {
