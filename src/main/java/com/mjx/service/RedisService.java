@@ -13,5 +13,5 @@ public interface RedisService {
 
     public void trainToRedis(final HttpServletResponse response);
 
-    public void ticketToRedis(final HttpServletResponse response);
+    public void ticketToRedis(final HttpServletResponse response,String city);
 }

@@ -107,15 +107,16 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void ticketToRedis(final HttpServletResponse response) {
+    public void ticketToRedis(final HttpServletResponse response,String city) {
         try {
             LOGGER.info("进入ticketToRedis");
             RedisUtil redisUtil = (RedisUtil)ContextUtil.get("redisUtil");
 
-            final List<Ticket> ticketList = (List<Ticket>)trainDAO.execute("getListTicket","北京");
+            long startTime=System.currentTimeMillis();
+
+            final List<Ticket> ticketList = (List<Ticket>)trainDAO.execute("getListTicket",city);
             final RedisSerializer<String> stringSerializer = redisUtil.getStringSerializer();
 
-            long startTime=System.currentTimeMillis();
             redisUtil.executePipelined(new RedisCallback<List<Object>>() {
                 @Override
                 public List<Object> doInRedis(RedisConnection connection) throws DataAccessException {

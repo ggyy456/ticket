@@ -33,7 +33,12 @@
         }
 
         function create(type) {//用户进入页面后就自动发起form表单的提交，激活长连接
-            var action = "${pageContext.request.contextPath}/ticket/polling.do?type="+type;
+            var datas = myList2.getData();
+            if(datas==""){
+                alert("请选择城市！");
+                return;
+            }
+            var action = "${pageContext.request.contextPath}/ticket/polling.do?type="+type+"&city="+datas[0].partName;
             $('#myForm').attr("action", action);
             $('#myForm').submit();
         }
@@ -143,7 +148,7 @@
 <iframe id="myiframe" name="myiframe" style="display: none;"></iframe>
 <input type="button" class="btn" value="缓存火车数据" onclick="create('train');"/>
 <input type="button" class="btn" value="缓存车票数据" onclick="create('ticket');"/>
-<div id="container" style="height: 200px;"></div>
+<br/><br/><div id="container" style="height: 200px;"></div>
 </div>
 
 <script>

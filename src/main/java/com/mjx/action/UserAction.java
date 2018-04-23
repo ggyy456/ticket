@@ -66,7 +66,7 @@ public class UserAction extends ActionSupport {
                 redisService.trainToRedis(response);
             }
             else if("ticket".equals(type)) {
-                redisService.ticketToRedis(response);
+                redisService.ticketToRedis(response,city);
             }
         }
         catch(Exception e){
