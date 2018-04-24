@@ -181,7 +181,7 @@ public class RedisUtil {
         return redisTemplate.opsForValue().increment(key, -delta);
     }
 
-    //================================Map=================================
+    //================================Hash=================================
     /**
      * HashGet
      * @param key 键 不能为null
@@ -193,11 +193,29 @@ public class RedisUtil {
     }
 
     /**
-     * 获取hashKey对应的所有键值
+     * HashGet
+     * @param key 键 不能为null
+     * @return 值
+     */
+    public Set<Object> hkeys(String key){
+        return redisTemplate.opsForHash().keys(key);
+    }
+
+    /**
+     * 获取hashKey对应的多个键值
      * @param key 键
      * @return 对应的多个键值
      */
-    public Map<Object,Object> hmget(String key){
+    public List<Object> hmget(String key, Collection<Object> var){
+        return redisTemplate.opsForHash().multiGet(key,var);
+    }
+
+    /**
+     * 获取hashKey对应的所有键值
+     * @param key 键
+     * @return 对应的所有键值
+     */
+    public Map<Object,Object> hgetAll(String key){
         return redisTemplate.opsForHash().entries(key);
     }
 
@@ -409,8 +427,28 @@ public class RedisUtil {
         }
     }
 
-    public Set<Object> sinter(String var1, Collection<String> var2){
-        return redisTemplate.opsForSet().intersect(var1,var2);
+    /**
+     * 取交集
+     * @param var 集合
+     * @return 交集set
+     */
+    public Set<Object> sinter(Collection<String> var){
+        Collection<String> var1 = var;
+        String key1 = (String)var1.toArray()[0];
+        var1.remove(key1);
+        return redisTemplate.opsForSet().intersect(key1,var1);
+    }
+
+    /**
+     * 取并集
+     * @param var 集合
+     * @return 并集set
+     */
+    public Set<Object> union(Collection<String> var){
+        Collection<String> var1 = var;
+        String key1 = (String)var1.toArray()[0];
+        var1.remove(key1);
+        return redisTemplate.opsForSet().union(key1,var1);
     }
 
     //===============================list=================================

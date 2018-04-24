@@ -2,22 +2,14 @@ package com.mjx.service.impl;
 
 import com.mjx.entity.ConstantTicket;
 import com.mjx.entity.Train;
-import com.mjx.entity.TrainDTO;
-import com.mjx.entity.User;
 import com.mjx.ibatis.IDAO;
-import com.mjx.redis.JedisUtil;
 import com.mjx.redis.RedisUtil;
 import com.mjx.service.TrainService;
-import com.mjx.service.UserService;
-import com.mjx.util.ConfigHelper;
 import com.mjx.util.ContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import redis.clients.jedis.Jedis;
 
-import javax.swing.text.html.HTMLDocument;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -59,7 +51,7 @@ public class TrainServiceImpl implements TrainService {
             String trainType = "query:type:"+trainTypeStr;
             String ticketType = randomTicketType(trainTypeStr,rd);
 
-            Set<Object> trainIds = redisUtil.sinter(beginStation,Arrays.asList(endStation,trainType));  //得到id交集
+            Set<Object> trainIds = redisUtil.sinter(new ArrayList(Arrays.asList(beginStation,endStation,trainType)));  //得到id交集
             Iterator<Object> trainIt = trainIds.iterator();
             int num = 0;
 

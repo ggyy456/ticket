@@ -1,16 +1,13 @@
 package com.mjx.redis;
 
-import com.alibaba.fastjson.JSON;
 import com.mjx.entity.TrainDTO;
 import com.mjx.ibatis.PagingMapImpl;
+import com.mjx.util.ContextUtil;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-
 import java.util.*;
 
 /**
@@ -55,32 +52,31 @@ public class AbstractRedisAction extends ActionSupport implements ModelDriven {
 
         long startTime = System.currentTimeMillis();
 
-        Jedis jedis = JedisUtil.getInstance().getJedis();
+        RedisUtil redisUtil = (RedisUtil) ContextUtil.get("redisUtil");
 
-        Set<String> ids = new HashSet<String>();
-        Set<String> stationIds = jedis.sinter(condition.toArray(new String[]{}));  //得到两个id集合的交集
+        Set<Object> ids = new HashSet<Object>();
+        Set<Object> stationIds = redisUtil.sinter(condition);  //得到两个id集合的交集
         ids.addAll(stationIds);
         if(!trainTypes.equals("")){
             String[] trainType = trainTypes.split(",");
-            Set<String> typeIds = jedis.sunion(trainType);
+            Set<Object> typeIds = redisUtil.union(new ArrayList(Arrays.asList(trainType)));
             ids.retainAll(typeIds);
         }
 
         List<TrainDTO> trainList = new ArrayList<TrainDTO>();
         if(ids.size() > 0) {
-            String[] idArr = ids.toArray(new String[]{});
-            List<String> trainJsonList = jedis.hmget("data:trainList", idArr);
+            List<Object> trainJsonList = redisUtil.hmget("data:trainList", ids);
 
-            for(String js:trainJsonList){
-                TrainDTO dto = JSON.parseObject(js, TrainDTO.class);
-                long firstSeatSet = jedis.scard("join:"+dto.getTrainId()+"一等座");
-                long secondSeatSet = jedis.scard("join:"+dto.getTrainId()+"二等座");
-                long businessSeatSet = jedis.scard("join:"+dto.getTrainId()+"商务座");
-                long hardSeatSet = jedis.scard("join:"+dto.getTrainId()+"硬座");
-                long softSeatSet = jedis.scard("join:"+dto.getTrainId()+"软座");
-                long hardSleepSet = jedis.scard("join:"+dto.getTrainId()+"硬卧");
-                long softSleepSet = jedis.scard("join:"+dto.getTrainId()+"软卧");
-                long noSeatSet = jedis.scard("join:"+dto.getTrainId()+"无座");
+            for(Object js:trainJsonList){
+                TrainDTO dto = (TrainDTO)js;
+                long firstSeatSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"一等座");
+                long secondSeatSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"二等座");
+                long businessSeatSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"商务座");
+                long hardSeatSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"硬座");
+                long softSeatSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"软座");
+                long hardSleepSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"硬卧");
+                long softSleepSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"软卧");
+                long noSeatSet = redisUtil.sGetSetSize("join:"+dto.getTrainId()+"无座");
 
                 dto.setFirstSeat(String.valueOf(firstSeatSet));
                 dto.setSecondSeat(String.valueOf(secondSeatSet));
@@ -98,8 +94,6 @@ public class AbstractRedisAction extends ActionSupport implements ModelDriven {
         long endTime=System.currentTimeMillis();
         float excTime=(float)(endTime-startTime)/1000;
         System.out.println("执行时间："+excTime+"s");
-
-        jedis.disconnect();
 
         paging.setSizePerPage(100);
         paging.setTotalSize(trainList.size());

@@ -4,7 +4,8 @@ import com.mjx.entity.Train;
 import com.mjx.entity.TrainDTO;
 import com.mjx.ibatis.BatchInfo;
 import com.mjx.ibatis.IDAO;
-import com.mjx.redis.JedisUtil;
+import com.mjx.redis.RedisUtil;
+import com.mjx.util.ContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -31,22 +32,22 @@ public class RedisToDatabaseJob {
     protected void run()  {
         long startTime=System.currentTimeMillis();
 
-        Jedis jedis = JedisUtil.getInstance().getJedis();
-        long second = jedis.ttl("data:userTicket");
+        RedisUtil redisUtil = (RedisUtil) ContextUtil.get("redisUtil");
+        long second = redisUtil.getExpire("data:userTicket");
 
         if(second <= 600){
             BatchInfo batchInsert = new BatchInfo(BatchInfo.INSERT);
             BatchInfo batchUpdate = new BatchInfo(BatchInfo.UPDATE);
             TrainDTO dto = null;
 
-            Set<String> keySet = jedis.hkeys("data:userTicket");
-            Iterator<String> keyIt = keySet.iterator();
+            Set<Object> keySet = redisUtil.hkeys("data:userTicket");
+            Iterator<Object> keyIt = keySet.iterator();
             String ids = "";
             int num = 0;
             while(keyIt.hasNext()){
                 dto = new TrainDTO();
-                String ticketId = keyIt.next();
-                String userId = jedis.hget("data:userTicket",ticketId);
+                String ticketId = (String)keyIt.next();
+                String userId = (String)redisUtil.hget("data:userTicket",ticketId);
                 dto.setTicketId(Integer.valueOf(ticketId));
                 dto.setUserId(Integer.valueOf(userId));
                 batchInsert.addBatch("Train.saveUserTicket", dto);
@@ -64,10 +65,8 @@ public class RedisToDatabaseJob {
 
             trainDAO.handleBatch(batchInsert);
             trainDAO.handleBatch(batchUpdate);
-            jedis.del("data:userTicket");
+            redisUtil.del("data:userTicket");
         }
-
-        jedis.disconnect();
 
         long endTime=System.currentTimeMillis();
         float excTime=(float)(endTime-startTime)/1000;
