@@ -8,7 +8,6 @@ import com.mjx.service.TrainService;
 import com.mjx.util.ContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.serializer.RedisSerializer;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -36,7 +35,6 @@ public class TrainServiceImpl implements TrainService {
     //lock比synchronized 效率稍高，并发访问时
     public void concurrencyTest(int n){
         RedisUtil redisUtil = (RedisUtil) ContextUtil.get("redisUtil");
-        final RedisSerializer<String> stringSerializer = redisUtil.getStringSerializer();
 
         lock.lock();
         try {
