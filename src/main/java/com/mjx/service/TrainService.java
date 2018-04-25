@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface TrainService {
 
-    public void concurrencyTest();
+    public void concurrencyTest(int n);
 }

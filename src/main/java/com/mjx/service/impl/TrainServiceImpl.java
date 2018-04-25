@@ -34,7 +34,7 @@ public class TrainServiceImpl implements TrainService {
     }
 
     //lock比synchronized 效率稍高，并发访问时
-    public void concurrencyTest(){
+    public void concurrencyTest(int n){
         RedisUtil redisUtil = (RedisUtil) ContextUtil.get("redisUtil");
         final RedisSerializer<String> stringSerializer = redisUtil.getStringSerializer();
 
@@ -46,8 +46,10 @@ public class TrainServiceImpl implements TrainService {
             LOGGER.info(userId+"参加抢票");
 
             String trainTypeStr = ConstantTicket.TRAIN_TYPE[rd.nextInt(6)];
-            String beginStation = "query:begin:北京";
-            String endStation = "query:end:成都";
+            String beginStr = ConstantTicket.HOT_CITY[rd.nextInt(n)];
+            String endStr = ConstantTicket.HOT_CITY[rd.nextInt(33)];
+            String beginStation = "query:begin:"+beginStr;
+            String endStation = "query:end:"+endStr;
             String trainType = "query:type:"+trainTypeStr;
             String ticketType = randomTicketType(trainTypeStr,rd);
 
