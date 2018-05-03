@@ -47,9 +47,9 @@ public class RedisToDatabaseJob {
             while(keyIt.hasNext()){
                 dto = new TrainDTO();
                 String ticketId = (String)keyIt.next();
-                String userId = (String)redisUtil.hget("data:userTicket",ticketId);
+                Integer userId = (Integer)redisUtil.hget("data:userTicket",ticketId);
                 dto.setTicketId(Integer.valueOf(ticketId));
-                dto.setUserId(Integer.valueOf(userId));
+                dto.setUserId(userId);
                 batchInsert.addBatch("Train.saveUserTicket", dto);
 
                 ids += ","+ticketId;

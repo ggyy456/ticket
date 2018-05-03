@@ -24,10 +24,10 @@
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-<!--                <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+                <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
                     <property name="jobDetail" ref="redisToDatabaseJobDetail" ></property>
-                    <property name="cronExpression" value="0/60 * * * * ?"></property>
-                </bean>-->
+                    <property name="cronExpression" value="0 0/5 * * * ?"></property>
+                </bean>
 
 
             </list>
