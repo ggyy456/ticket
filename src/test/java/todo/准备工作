@@ -8,3 +8,5 @@ spring aop控制事物
 
 多线程生成和缓存redis数据
 redis数据和数据库同步
+
+mycat分表分区

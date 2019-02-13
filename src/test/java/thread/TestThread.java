@@ -1,13 +1,27 @@
 package thread;
 
-public class TestThread {
+public class TestThread extends Thread{
+    private int count = 5;
+
     public static void main(String[] args) {
-        System.out.println(111);
+        TestThread tt = new TestThread();
 
-        System.out.println(222);
+        Thread t1 = new Thread(tt,"A");
+        Thread t2 = new Thread(tt,"B");
+        Thread t3 = new Thread(tt,"C");
+        Thread t4 = new Thread(tt,"D");
+        Thread t5 = new Thread(tt,"E");
 
-        System.out.println(333);
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();
+    }
 
-        System.out.println(444);
+
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName()+count--);
     }
 }
