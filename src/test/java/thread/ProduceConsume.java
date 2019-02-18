@@ -3,6 +3,10 @@ package thread;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    为防止list.remove出异常，可用while来一直检查list的长度
+    notify可能导致有的没有通知到，出现“假死”情况，使用notifyAll可以避免。
+ */
 public class ProduceConsume {
     private List list = new ArrayList();
 
