@@ -3,7 +3,7 @@ package thread;
 /*
     ThreadLocal实现每个线程绑定自己的值，从而隔离其他线程的值。
  */
-public class M_ThreadLocalExt {
+public class M_ThreadLocal {
     public static ThreadLocal<String> tl = new ThreadLocal<String>();
 
     public static void main(String[] args) {

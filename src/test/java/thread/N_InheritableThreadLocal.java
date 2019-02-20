@@ -6,7 +6,7 @@ import java.util.Date;
     InheritableThreadLocal可以在子线程中取得父线程继承下来的值。
     同时还可以通过覆盖childValue方法对值进行进一步处理。
  */
-public class N_InheritableThreadLocalExt {
+public class N_InheritableThreadLocal {
     public static InheritableThreadLocal<String> itl = new InheritableThreadLocal<String>(){
         @Override
         protected String initialValue(){
