@@ -1,12 +1,10 @@
 package thread;
 
-import javassist.convert.TransformReadField;
-
 /*
     出现脏读是因为public void getValue()方法并不是同步的，所以可以在任意时候进行调用；
     解决方法当然就是加上同步synchronized关键字
  */
-public class DirtyRead {
+public class E_DirtyRead {
     private String username = "A";
     private String password = "AA";
 
@@ -29,9 +27,15 @@ public class DirtyRead {
 
     public static void main(String[] args) {
         try {
-            DirtyRead dr = new DirtyRead();
-            ThreadDirty t = new ThreadDirty(dr);
-            t.start();
+            final E_DirtyRead dr = new E_DirtyRead();
+
+            new Thread(){
+                @Override
+                public void run(){
+                    dr.setValue("B","BB");
+                }
+            }.start();
+
             Thread.sleep(200);
             dr.getValue();
         } catch (InterruptedException e) {
@@ -39,17 +43,4 @@ public class DirtyRead {
         }
     }
 
-}
-
-class ThreadDirty extends Thread {
-    private DirtyRead dr;
-
-    public ThreadDirty(DirtyRead dr){
-        this.dr = dr;
-    }
-
-    @Override
-    public void run(){
-        dr.setValue("B","BB");
-    }
 }

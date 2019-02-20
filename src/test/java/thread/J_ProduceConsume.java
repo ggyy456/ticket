@@ -7,7 +7,7 @@ import java.util.List;
     为防止list.remove出异常，可用while来一直检查list的长度
     notify可能导致有的没有通知到，出现“假死”情况，使用notifyAll可以避免。
  */
-public class ProduceConsume {
+public class J_ProduceConsume {
     private List list = new ArrayList();
 
     synchronized  public void produce(){
@@ -41,45 +41,44 @@ public class ProduceConsume {
     }
 
     public static void main(String[] args) {
-        ProduceConsume pc = new ProduceConsume();
-        ThreadProduce tp = new ThreadProduce(pc);
-        ThreadConsume tc1 = new ThreadConsume(pc);
-        ThreadConsume tc2 = new ThreadConsume(pc);
-        ThreadConsume tc3 = new ThreadConsume(pc);
+        final J_ProduceConsume pc = new J_ProduceConsume();
 
-        tp.start();
-        tc1.start();
-        tc2.start();
-        tc3.start();
-    }
-}
+        Thread produce = new Thread(){
+            @Override
+            public void run(){
+                while(true){
+                    pc.produce();
+                }
+            }
+        };
+        Thread consume1 = new Thread(){
+            @Override
+            public void run(){
+                while(true){
+                    pc.consume();
+                }
+            }
+        };
+        Thread consume2 = new Thread(){
+            @Override
+            public void run(){
+                while(true){
+                    pc.consume();
+                }
+            }
+        };
+        Thread consume3 = new Thread(){
+            @Override
+            public void run(){
+                while(true){
+                    pc.consume();
+                }
+            }
+        };
 
-class ThreadProduce extends Thread{
-    private ProduceConsume pc;
-
-    public ThreadProduce(ProduceConsume pc){
-        this.pc = pc;
-    }
-
-    @Override
-    public void run(){
-        while(true){
-            pc.produce();
-        }
-    }
-}
-
-class ThreadConsume extends Thread{
-    private ProduceConsume pc;
-
-    public ThreadConsume(ProduceConsume pc){
-        this.pc = pc;
-    }
-
-    @Override
-    public void run(){
-        while(true){
-            pc.consume();
-        }
+        produce.start();
+        consume1.start();
+        consume2.start();
+        consume3.start();
     }
 }

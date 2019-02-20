@@ -13,7 +13,7 @@ package thread;
        是类对象，静态方法的“对象监听器”是class，所以他们两者并不会同步，会异步调用。
 
  */
-public class TestSubject {
+public class A_TestSubject {
     synchronized public void a(){
         //try {
         //Thread.sleep(2000);
@@ -34,7 +34,7 @@ public class TestSubject {
     }
 
     public static void main(String[] args) {
-        final TestSubject ts = new TestSubject();
+        final A_TestSubject ts = new A_TestSubject();
 
         Thread t = new Thread(){
             @Override

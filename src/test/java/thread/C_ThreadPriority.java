@@ -3,7 +3,7 @@ package thread;
 /*
     setPriority()设置线程优先级，1-10级，10级为最优先
  */
-public class ThreadPriority extends Thread{
+public class C_ThreadPriority extends Thread{
 
     @Override
     public void run() {
@@ -14,11 +14,11 @@ public class ThreadPriority extends Thread{
     }
 
     public static void main(String[] args) {
-        ThreadPriority tp1 = new ThreadPriority();
+        C_ThreadPriority tp1 = new C_ThreadPriority();
         tp1.setPriority(1);
         tp1.start();
 
-        ThreadPriority tp2 = new ThreadPriority();
+        C_ThreadPriority tp2 = new C_ThreadPriority();
         tp2.setPriority(8);
         tp2.start();
     }

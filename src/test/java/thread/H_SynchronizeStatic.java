@@ -7,7 +7,7 @@ package thread;
     但如果是在静态方法上使用synchronized，那即使是创建不同的对象，他们也是同步的
     synchronized放在静态方法上作用等同于synchronized(Class)
  */
-public class SynchronizeStatic {
+public class H_SynchronizeStatic {
     synchronized public static void printA(){
         try {
             System.out.println("线程名称为：" + Thread.currentThread().getName() +"在"+ System.currentTimeMillis()+"进入printA");
@@ -20,7 +20,7 @@ public class SynchronizeStatic {
     }
 
     public void printB(){
-        synchronized(SynchronizeStatic.class) {
+        synchronized(H_SynchronizeStatic.class) {
             try {
                 System.out.println("线程名称为：" + Thread.currentThread().getName() + "在" + System.currentTimeMillis() + "进入printB");
                 Thread.sleep(2000);
@@ -43,37 +43,33 @@ public class SynchronizeStatic {
     }
 
     public static void main(String[] args) {
-        SynchronizeStatic ss =  new SynchronizeStatic();
-        ThreadStatic t1 = new ThreadStatic(ss,"a");
+        final H_SynchronizeStatic ss =  new H_SynchronizeStatic();
+
+        Thread t1 = new Thread(){
+            @Override
+            public void run(){
+                printA();
+            }
+        };
         t1.setName("a");
         t1.start();
-        ThreadStatic t2 = new ThreadStatic(ss,"b");
+
+        Thread t2 = new Thread(){
+            @Override
+            public void run(){
+                ss.printB();
+            }
+        };
         t2.setName("b");
         t2.start();
-        ThreadStatic t3 = new ThreadStatic(ss,"c");
+
+        Thread t3 = new Thread(){
+            @Override
+            public void run(){
+                ss.printC();
+            }
+        };
         t3.setName("c");
         t3.start();
-    }
-}
-
-class ThreadStatic extends Thread {
-    private SynchronizeStatic ss;
-    private String sign;
-
-    public ThreadStatic(SynchronizeStatic ss,String sign){
-        this.ss = ss;
-        this.sign = sign;
-    }
-
-    @Override
-    public void run(){
-        if("a".equals(sign)) {
-            SynchronizeStatic.printA();
-        }
-        else if("b".equals(sign)) {
-            ss.printB();
-        }else if("c".equals(sign)) {
-            ss.printC();
-        }
     }
 }

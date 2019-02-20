@@ -4,7 +4,7 @@ package thread;
     join的作用，等待子线程运行完毕后，才能执行主线程的代码
     Thread.sleep方法不释放锁，而join是会释放锁的
  */
-public class ThreadJoin extends Thread {
+public class L_ThreadJoin extends Thread {
     @Override
     public void run(){
         try{
@@ -21,7 +21,7 @@ public class ThreadJoin extends Thread {
     }
 
     public static void main(String[] args) {
-        final ThreadJoin tj = new ThreadJoin();
+        final L_ThreadJoin tj = new L_ThreadJoin();
         tj.setName("tj");
 
         Thread t = new Thread(){

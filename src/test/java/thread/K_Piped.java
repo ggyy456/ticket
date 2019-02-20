@@ -11,7 +11,7 @@ import java.io.PipedWriter;
     2）PipedReader 和 PipedWriter
  */
 
-public class Piped {
+public class K_Piped {
     public void writeMethod(PipedWriter out){
         try {
             System.out.println("write:");
@@ -47,14 +47,25 @@ public class Piped {
 
     public static void main(String[] args) {
         try {
-            Piped pp = new Piped();
-            PipedWriter out = new PipedWriter();
-            PipedReader in = new PipedReader();
+            final K_Piped pp = new K_Piped();
+            final PipedWriter out = new PipedWriter();
+            final PipedReader in = new PipedReader();
             out.connect(in);
 
-            ThreadRead tr = new ThreadRead(pp,in);
-            ThreadWrite tw = new ThreadWrite(pp,out);
+            Thread tr = new Thread(){
+                @Override
+                public void run(){
+                    pp.readMethod(in);
+                }
+            };
             tr.start();
+
+            Thread tw = new Thread(){
+                @Override
+                public void run(){
+                    pp.writeMethod(out);
+                }
+            };
 
             Thread.sleep(2000);
             tw.start();
@@ -66,32 +77,4 @@ public class Piped {
     }
 }
 
-class ThreadWrite extends Thread {
-    private Piped pp;
-    private PipedWriter out;
 
-    public ThreadWrite(Piped pp,PipedWriter out){
-        this.pp = pp;
-        this.out = out;
-    }
-
-    @Override
-    public void run(){
-        pp.writeMethod(out);
-    }
-}
-
-class ThreadRead extends Thread {
-    private Piped pp;
-    private PipedReader in;
-
-    public ThreadRead(Piped pp,PipedReader in){
-        this.pp = pp;
-        this.in = in;
-    }
-
-    @Override
-    public void run(){
-        pp.readMethod(in);
-    }
-}

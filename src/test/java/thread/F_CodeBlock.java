@@ -14,7 +14,7 @@ package thread;
     如果使用this，则该类中其他的同步代码块也呈阻塞状态
     如果使用object，则与不同对象监视器的其他同步代码块互补干扰，可以异步执行，这样也很容易造成脏读
  */
-public class CodeBlock {
+public class F_CodeBlock {
     private String data1;
     private String data2;
 
@@ -53,40 +53,29 @@ public class CodeBlock {
     }
 
     public static void main(String[] args) {
-        CodeBlock cb = new CodeBlock();
-        ThreadBlockThis tt1 = new ThreadBlockThis(cb);
-        ThreadBlockThis tt2 = new ThreadBlockThis(cb);
-        tt1.start();
-        tt2.start();
+        final F_CodeBlock cb = new F_CodeBlock();
 
-        //ThreadBlockObject to = new ThreadBlockObject(cb);
-        //to.start();
+        new Thread(){
+            @Override
+            public void run(){
+                cb.synchronizeWithThis();
+            }
+        }.start();
+
+        new Thread(){
+            @Override
+            public void run(){
+                cb.synchronizeWithThis();
+            }
+        }.start();
+
+        new Thread(){
+            @Override
+            public void run(){
+                cb.synchronizeWithObject();
+            }
+        }.start();
     }
 
 }
 
-class ThreadBlockThis extends Thread {
-    private CodeBlock cb;
-
-    public ThreadBlockThis(CodeBlock cb){
-        this.cb = cb;
-    }
-
-    @Override
-    public void run(){
-        cb.synchronizeWithThis();
-    }
-}
-
-class ThreadBlockObject extends Thread {
-    private CodeBlock cb;
-
-    public ThreadBlockObject(CodeBlock cb){
-        this.cb = cb;
-    }
-
-    @Override
-    public void run(){
-        cb.synchronizeWithObject();
-    }
-}

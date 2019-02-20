@@ -8,7 +8,7 @@ package thread;
     但如果多个线程访问多个对象，则JVM会创建多个锁，示例就是创建了2个ManyObjectManyLock类的对象
     所以就会产生2个锁，如果两个线程都调用同一个对象，则运行结果是同步的。
  */
-public class ManyObjectManyLock{
+public class D_ManyObjectManyLock {
     private int num = 0;
 
     synchronized public void setNum(String name){
@@ -29,39 +29,23 @@ public class ManyObjectManyLock{
     }
 
     public static void main(String[] args) {
-        ManyObjectManyLock obj1 = new ManyObjectManyLock();
-        ManyObjectManyLock obj2 = new ManyObjectManyLock();
+        final D_ManyObjectManyLock obj1 = new D_ManyObjectManyLock();
+        final D_ManyObjectManyLock obj2 = new D_ManyObjectManyLock();
 
-        ThreadA a = new ThreadA(obj1);
-        a.start();
-        ThreadB b = new ThreadB(obj2);
-        //ThreadB b = new ThreadB(obj1);
-        b.start();
-    }
-}
+        new Thread(){
+            @Override
+            public void run(){
+                obj1.setNum("a");
+            }
+        }.start();
 
-class ThreadA extends Thread{
-    private ManyObjectManyLock obj;
+        new Thread(){
+            @Override
+            public void run(){
+                obj2.setNum("b");
+                //obj1.setNum("b");
+            }
+        }.start();
 
-    public ThreadA(ManyObjectManyLock obj){
-        this.obj = obj;
-    }
-
-    @Override
-    public void run(){
-        obj.setNum("a");
-    }
-}
-
-class ThreadB extends Thread{
-    private ManyObjectManyLock obj;
-
-    public ThreadB(ManyObjectManyLock obj){
-        this.obj = obj;
-    }
-
-    @Override
-    public void run(){
-        obj.setNum("b");
     }
 }

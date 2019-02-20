@@ -5,7 +5,7 @@ package thread;
     interrupt 用来给线程设置一个状态，在线程中可以通过isInterrupted方法来看这个状态是否存在，可进行手动停止线程运行。
     停止线程的方式可以return或者抛出异常，抛出异常可以让上层接收到具体的异常信息。
  */
-public class ThreadInterrupt extends Thread{
+public class A_ThreadInterrupt extends Thread{
 
     @Override
     public void run() {
@@ -22,7 +22,7 @@ public class ThreadInterrupt extends Thread{
 
     public static void main(String[] args) {
         try {
-            ThreadInterrupt ti = new ThreadInterrupt();
+            A_ThreadInterrupt ti = new A_ThreadInterrupt();
             ti.start();
             Thread.sleep(200);
             ti.interrupt();
