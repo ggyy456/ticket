@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
     Condition是由Lock对象创建出来的，一个Lock对象可以创建多个Condition实例。
     Condition可以通过创建出来的多个实例，分别唤醒指定的线程。
  */
-public class P_Condition {
+public class P1_Condition {
     private Lock lock = new ReentrantLock();
     private Condition condA = lock.newCondition();
     private Condition condB = lock.newCondition();
@@ -63,7 +63,7 @@ public class P_Condition {
     }
 
     public static void main(String[] args) {
-        final P_Condition c = new P_Condition();
+        final P1_Condition c = new P1_Condition();
 
         new Thread(){
             @Override
