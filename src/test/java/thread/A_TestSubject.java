@@ -1,5 +1,11 @@
 package thread;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /*
     容易引起误解的题目：
     1、首先应该清楚在类里面的方法上加synchronized，“对象监听器”都是当前类对象，该类里面的所有方法都共用一个锁，他们是同步的。
@@ -42,7 +48,7 @@ public class A_TestSubject {
                 ts.a();
             }
         };
-        t.start();
+        //t.start();
 
 //        try {
 //            Thread.sleep(10);
@@ -50,7 +56,40 @@ public class A_TestSubject {
 //            e.printStackTrace();
 //        }
 
-        ts.b();
+        //ts.b();
 
+        ts.simpleDateFormatNotSafe();
+    }
+
+    //SimpleDateFormat非线程安全，处理的时候需要加同步块或者加锁
+    public void simpleDateFormatNotSafe(){
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        final String dateString = "2000-06-06";
+        final Lock lock = new ReentrantLock();
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //lock.lock();
+                    Date date = sdf.parse(dateString);
+                    //lock.unlock();
+                    String newDateString = sdf.format(date).toString();
+                    System.out.println(dateString+"|"+newDateString);
+                } catch (ParseException e) {
+                    //e.printStackTrace();
+                } finally {
+                    //lock.unlock();
+                }
+            }
+        };
+
+        Thread[] t = new Thread[10];
+        for (int i = 0; i < t.length; i++) {
+            t[i] = new Thread(r);
+        }
+        for (int i = 0; i < t.length; i++) {
+            t[i].start();
+        }
     }
 }
